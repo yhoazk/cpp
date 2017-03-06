@@ -17,6 +17,8 @@ MatrixXd H;	// measurement matrix
 MatrixXd R;	// measurement covariance matrix
 MatrixXd I; // Identity matrix
 MatrixXd Q;	// process covariance matrix
+MatrixXd K;	// process covariance matrix
+MatrixXd S;	// process covariance matrix
 
 vector<VectorXd> measurements;
 void filter(VectorXd &x, MatrixXd &P);
@@ -26,7 +28,6 @@ int main() {
 	/**
 	 * Code used as example to work with Eigen matrices
 	 */
-//	//you can create a  vertical vector of two elements with a command like this
 //	VectorXd my_vector(2);
 //	//you can use the so called comma initializer to set all the coefficients to some values
 //	my_vector << 10, 20;
@@ -112,17 +113,24 @@ int main() {
 
 void filter(VectorXd &x, MatrixXd &P) {
 
+ VectorXd y(1);
 	for (unsigned int n = 0; n < measurements.size(); ++n) {
 
 		VectorXd z = measurements[n];
 		//YOUR CODE HERE
 
 		// KF Measurement update step
-
+    S = (H * P * H.transpose()) + R;
+    y = z - (H*x);
+    K = P * H.transpose() * S.inverse();
+    x += K * y;
+    P = (I-(K*H)) * P;
 
 		// new state
 
 		// KF Prediction step
+    x = (F*x) + u;
+    P = F * P * F.transpose();
 
 		std::cout << "x=" << std::endl <<  x << std::endl;
 		std::cout << "P=" << std::endl <<  P << std::endl;
