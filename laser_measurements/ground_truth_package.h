@@ -1,7 +1,7 @@
 #ifndef GROUND_TRUTH_PACKAGE_H_
 #define GROUND_TRUTH_PACKAGE_H_
 
-#include "Dense"
+#include "../Eigen/Dense"
 
 class GroundTruthPackage {
 public:
