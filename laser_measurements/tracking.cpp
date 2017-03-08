@@ -69,7 +69,12 @@ void Tracking::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
     // TODO: YOUR CODE HERE
 	//1. Modify the F matrix so that the time is integrated
+	kf_.F_ << 1, 0, dt, 0,
+				0, 1, 0, dt,
+				0, 0, 1, 0,
+				0, 0, 0, 1;
 	//2. Set the process covariance matrix Q
+	kf_.Q_ << 
 	//3. Call the Kalman Filter predict() function
 	//4. Call the Kalman Filter update() function
 	// with the most recent raw measurements_

@@ -6,6 +6,7 @@
 #include "measurement_package.h"
 #include "ground_truth_package.h"
 #include "tracking.h"
+#include "kalman_filter.h"
 
 using namespace std;
 using Eigen::MatrixXd;
