@@ -29,4 +29,8 @@
 
 - Algorithms:
 
+The Algorithms in this library may need a **unary predicate**
+
+
+
 - Iterators:

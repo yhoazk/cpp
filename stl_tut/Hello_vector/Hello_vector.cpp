@@ -64,11 +64,14 @@ bool print_n_values(size_t n, std::vector<int> &v)
 */
 bool iterate_in_vector(std::vector<int> &v)
 {
-  for (std::vector<int>::iterator i = v.begin(); i != v.end() count; ++i) {
-    /* code */
+  std::cout << "Iterate in vector" << '\n';
+  for (std::vector<int>::iterator i = v.begin(); i != v.end(); ++i) {
+    std::cout << *i << '\n';
   }
-
+std::cout << "End iteration" << '\n';
 }
+
+
 
 
 
@@ -78,6 +81,8 @@ int vals[] = {1,2,3,5,4,2,2};
 int main(int argc, char const *argv[]) {
   std::vector<int> v;
   insert_n_elemets(6, vals, v);
+
+  iterate_in_vector(v);
   /**
     Vector methods
     front()
@@ -96,8 +101,10 @@ int main(int argc, char const *argv[]) {
 
   std::cout << "The vector cointais " << v.size() << " elements." << std::endl;
   /**
-
-  */
+  Vectors can be used pretty much as a normal arrays.
+    */
+  std::cout << "V[0]: " << v[0] << '\n';
+  std::cout << "V[0]+V[1]: " << v[0]+v[1] << '\n';
 
   //print_n_values(6, v);
   return 0;
