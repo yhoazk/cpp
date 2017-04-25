@@ -4,7 +4,7 @@ clean:
 	rm -rf ./*.exe
 
 comp:
-	g++ -g -o lambda.exe lambda.cpp
+	g++ -g -o hello_map.exe hello_map.cpp
 
 run:
-	./lambda.exe
+	./hello_map.exe
