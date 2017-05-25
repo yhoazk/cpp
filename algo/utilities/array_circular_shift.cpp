@@ -3,7 +3,26 @@
 using namespace std;
 
 
-size_t test_arr[] = {0,1,2,3,4,5,6,7,8,9};
+void myMemCpy(void* dst, void* src, size_t num)
+{
+  size_t* l_dst = (size_t*)dst;
+  size_t* l_src = (size_t*)src;
+  char* c_dst = (char*)dst;
+  char* c_src = (char*)src;
+
+  while (num >= sizeof(size_t)) {
+    /* code */
+    *l_dst++ = *l_src++;
+    num -= sizeof(size_t);
+  }
+  while (num > 0) {
+    *c_dst++ = *c_src++;
+    --num;
+  }
+}
+
+
+size_t test_arr[] = {9,8,7,6,5,4,3,2,1,0};
 
 void printArray(size_t* arr, size_t len)
 {
@@ -22,15 +41,15 @@ void circular_shift(size_t* pArray, size_t lenOfArray, signed int shift)
 
   if(shift > 0)
   {
-    memcpy(tmp, &pArray[(lenOfArray-shift)], shift*sizeof(size_t));
-    memcpy(&pArray[shift], pArray, (lenOfArray-shift)*sizeof(size_t));
-    memcpy(pArray,tmp,shift*sizeof(size_t));
+    myMemCpy(tmp, &pArray[(lenOfArray-shift)], shift*sizeof(size_t));
+    myMemCpy(&pArray[shift], pArray, (lenOfArray-shift)*sizeof(size_t));
+    myMemCpy(pArray,tmp,shift*sizeof(size_t));
   }
   else
   {
-    memcpy(tmp, pArray, shift*sizeof(size_t));
-    memcpy(pArray, &pArray[shift], (lenOfArray-shift)*sizeof(size_t));
-    memcpy(&pArray[lenOfArray-shift], tmp, shift*sizeof(size_t));
+    myMemCpy(tmp, pArray, shift*sizeof(size_t));
+    myMemCpy(pArray, &pArray[shift], (lenOfArray-shift)*sizeof(size_t));
+    myMemCpy(&pArray[lenOfArray-shift], tmp, shift*sizeof(size_t));
   }
   delete[] tmp;
 }
