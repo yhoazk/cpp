@@ -61,3 +61,46 @@ if (k > 0) {
 }
 delete tmp
 ```
+
+
+Intw:
+
+1.
+A call log is given with the next format:
+
+```
+hh:mm:ss,nnn-nnn-nnn
+hh:mm:ss,nnn-nnn-nnn
+hh:mm:ss,nnn-nnn-nnn
+hh:mm:ss,nnn-nnn-nnn
+```
+
+We want to verify the cost of the complete bill. There are some rules:
+- If the call is less than 5 min the cost per second is 3 cents.
+- If the call is 5 min or more the cost per initiated minute is 150 cents.
+  This means that a call if 00:05:01 = 6 min * 150c
+- At the end of the period, the most recent number is selected and the cost of all the calls made to that number is removed.
+  - If there are two numbers with the same amount of time, the one with the lowest numeric value is selected.
+
+2.
+An array of numbers of different color is given.
+The array is of size NxM
+Each color represents a country if two conditions are met:
+- It's possible to move from one cell to another of the same color moving only to the nort, south, east or west.
+- if it's not possible then its a different country even if they have the same color:
+
+
+This algorithm must run in O(NxM) time and space
+```matlab
+C= [5,4,4;4,3,4;3,2,4;2,2,2;3,3,4;1,4,4;4,1,1]
+imagesc(C)
+# the answer for this is 11
+```
+![](./grid.png)
+
+3. Find the convex hull of a set of points in O(n log n) time.
+
+
+
+4. Find the error in the `period.cpp` file, the file returns the length of the longest
+periodic series in an `int`
