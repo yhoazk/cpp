@@ -41,3 +41,10 @@ prints:
 >0 
 >f
 >t
+
+
+## Eigen library:
+
+https://eigen.tuxfamily.org/dox/group__TutorialMatrixClass.html
+
+
