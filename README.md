@@ -61,6 +61,21 @@ This also reduces all the chores of writing all the necessary header files.
 You don’t have to remember all the STL of GNU C++ for every function you use.
 
 
+## Is malloc re-entrant?
+
+[https://stackoverflow.com/questions/855763/is-malloc-thread-safe](https://stackoverflow.com/questions/855763/is-malloc-thread-safe)
+
+
+## Re-entrant vs thread safe:
+
+A function is thread-safe if:
+
+>it only manipulates shared data structures in a manner that guarantees safe execution by multiple threads at the same time.
+
+A function is reentrant if:
+
+>it can be interrupted at any point during its execution and then safely called again ("re-entered") before its previous invocations complete execution.
+
 
 ## Eigen library:
 
