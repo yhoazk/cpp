@@ -83,7 +83,7 @@ Placement new is used when writing custom allocators for performance-critical sc
 ## Branch on variable declaration
 
 C++ contains a syntactical shorthand for simultaneously declaring a variable and branching on its value. It looks like a single variable declaration and can go in the condition of an if or while statement.
-
+```cpp
 struct Event { virtual ~Event() {} };
 struct MouseEvent : Event { int x, y; };
 struct KeyboardEvent : Event { int key; };
@@ -98,12 +98,12 @@ void log(Event *event) {
   else
     std::cout << "Event" << std::endl;
 }
-
+```
 
 ## Ref-qualifiers on member functions
 
 C++11 allows member functions to be overloaded on the value type of the object that will be used for this using a ref-qualifier. A ref-qualifier sits in the same position as a cv-qualifier and affects overload resolution depending on if the object for this is an lvalue or an rvalue:
-
+```cpp
 #include <iostream>
 
 struct Foo {
@@ -117,10 +117,12 @@ int main() {
   Foo().foo(); // Prints "rvalue"
   return 0;
 }
+```
+
 ## Turing complete template metaprogramming
 
 C++ templates are for compile-time metaprogramming, which means programs that generate other programs. The template system is designed for simple type substitutions but it was discovered by accident during the C++ standardization process that templates are actually powerful enough to perform arbitrary calculations, albeit very awkwardly and inefficiently. Computation is done via template specialization:
-
+```cpp
 // Recursive template for general case
 template <int N>
 struct factorial {
@@ -134,8 +136,9 @@ struct factorial<0> {
 };
 
 enum { result = factorial<5>::value }; // 5 * 4 * 3 * 2 * 1 == 120
+```
 C++ templates can be thought of as a functional programming language since they use recursion instead of iteration and contain no mutable state. You can create a variable that holds a type via typedef and a variable that holds an int via enum. Data structures are embedded in types themselves:
-
+```cpp
 // Compile-time list of integers
 template <int D, typename N>
 struct node {
@@ -157,12 +160,13 @@ struct sum<end> {
 // Data structures are embedded in types
 typedef node<1, node<2, node<3, end> > > list123;
 enum { total = sum<list123>::value }; // 1 + 2 + 3 == 6
+```
 While these examples are pretty useless, template metaprogramming enables some useful things like being able to manipulate lists of types. However, the programming language formed by C++ templates has terrible usability, so try to use it sparingly and in small amounts. Template code is hard to read, slow to compile, and very difficult to debug due to incredibly long and cryptic compiler error messages.
 
 ## Pointer-to-member operators
 
 Pointer-to-member operators let you describe a pointer to a certain member on any instance of a class. There are two pointer-to-member operators, .* for values and ->* for pointers:
-
+```cpp
 #include <iostream>
 using namespace std;
 
@@ -190,8 +194,9 @@ int main() {
   delete pt;
   return 0;
 }
+```
 This feature is actually really useful, particularly for writing libraries. For example, Boost::Python (a library for binding C++ to Python objects) uses member pointers to easily refer to members when wrapping objects:
-
+```cpp
 #include <iostream>
 #include <boost/python.hpp>
 using namespace boost::python;
@@ -206,10 +211,12 @@ BOOST_PYTHON_MODULE(hello) {
     .def_readwrite("msg", &World::msg)
     .def("greet", &World::greet);
 }
+```
+
 Keep in mind when using member function pointers that they are different from regular function pointers. Casting between a member function pointer and a regular function pointer will not work. For example, member functions in Microsoft's compilers use an optimized calling convention called thiscall that puts the this parameter in the ecx register, while normal functions use a calling convention that passes all arguments on the stack.
 
 Also, member function pointers may be up to four times larger than regular pointers. The compiler may need to store the address of the function body, the offset to the correct base (multiple inheritance), the index of another offset in the vtable (virtual inheritance), and maybe even the offset of the vtable inside the object itself (for forward declared types).
-
+```cpp
 #include <iostream>
 
 struct A {};
@@ -229,12 +236,14 @@ int main() {
 // 32-bit Visual C++ 2008:  A = 4, B = 8, D = 12, E = 16
 // 32-bit GCC 4.2.1:        A = 8, B = 8, D = 8,  E = 8
 // 32-bit Digital Mars C++: A = 4, B = 4, D = 4,  E = 4
+```
+
 All member function pointers in the Digital Mars compiler are the same size due to a clever design that generates "thunk" functions to apply the right offsets instead of storing the offsets in the pointer itself.
 
 ## Static methods on instances
 
 C++ lets you invoke static methods from an instance in addition to invoking them from the type. This lets you change an instance method to a static method without needing to update any call sites.
-
+```cpp
 struct Foo {
   static void foo() {}
 };
@@ -242,22 +251,24 @@ struct Foo {
 // These are equivalent
 Foo::foo();
 Foo().foo();
+```
 
-## Overloading ++ and --
+## Overloading `++` and `--`
 
 C++ is designed so the function name of custom operators is the operator symbol itself, which works fine in most cases. For example, the unary - and binary - operators (negation and subtraction) can be distinguished by the argument count. This doesn't work for the unary increment and decrement operators though since they both seem to need the exact same signature. The C++ language has an ugly hack to work around this: the postfix ++ and -- operators must take a dummy int argument as a flag for the compiler to know to make a postfix operator (and yes, only the type int works).
-
+```cpp
 struct Number {
   Number &operator ++ (); // Generate a prefix ++ operator
   Number operator ++ (int); // Generate a postfix ++ operator
 };
+```
 
 ## Operator overloading and evaluation order
 
 Overloading the , (comma), ||, or && operators is very confusing because it destroys the normal evaluation rules. Normally, the comma operator guarantees that the entire left side will be evaluated before evaluation starts on the right side and the || and && operators have short-circuit behavior that only evaluates the right side when necessary. However, the overloaded versions of these operators are just function calls, and function calls evaluate their arguments in an unspecified order.
 
 Overloading these operators is just a way to abuse C++ syntax. As an example, I give you a C++ implementation of a Python-style print statement that doesn't need parentheses:
-
+```cpp
 #include <iostream>
 
 namespace __hidden__ {
@@ -284,10 +295,12 @@ int main() {
   print "the sum of", a, "and", b, "is", a + b;
   return 0;
 }
+```
+
 ## Functions as template parameters
 
 It's well known that template parameters can be specific integers but they can also be specific functions. This lets the compiler inline calls to that specific function in the instantiated template code for more efficient execution. In the example below, the function memoize takes a function as a template parameter and only calls the function for new argument values (old argument values are remembered from the cache).
-
+```cpp
 #include <map>
 
 template <int (*f)(int)>
@@ -302,10 +315,12 @@ int fib(int n) {
   if (n < 2) return n;
   return memoize<fib>(n - 1) + memoize<fib>(n - 2);
 }
+```
+
 ## Template template parameters
 
 Template parameters can actually have template parameters themselves. This allows you to pass templated types without template parameters when instantiating a template. Say we have the following code:
-
+```cpp
 template <typename T>
 struct Cache { ... };
 
@@ -323,11 +338,13 @@ struct CachedStore {
 
 CachedStore<NetworkStore<int>, int> a;
 CachedStore<MemoryStore<int>, int> b;
-CachedStore puts a cache that holds a certain data type in front of a store that stores the same data type. However, we must repeat the data type (int in the code above) when instantiating a CachedStore, once for the store itself and once for CachedStore, and there's no guarantee that the data types are consistent. We really want to just specify the data type once so we can enforce this invariant, but leaving off the type parameter list causes a compile error:
-
+```
+`CachedStore` puts a cache that holds a certain data type in front of a store that stores the same data type. However, we must repeat the data type (int in the code above) when instantiating a `CachedStore`, once for the store itself and once for `CachedStore`, and there's no guarantee that the data types are consistent. We really want to just specify the data type once so we can enforce this invariant, but leaving off the type parameter list causes a compile error:
+```cpp
 // These do not compile because NetworkStore and MemoryStore are missing type parameters
 CachedStore<NetworkStore, int> c;
 CachedStore<MemoryStore, int> d;
+```
 Template template parameters let us get the syntax we want. Note that you need to use the class keyword for template parameters that themselves have template parameters.
 ```
 template <template <typename> class Store, typename T>
