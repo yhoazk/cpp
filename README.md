@@ -82,3 +82,14 @@ A function is reentrant if:
 https://eigen.tuxfamily.org/dox/group__TutorialMatrixClass.html
 
 
+
+## Pointer to functions:
+
+```C
+typedef double_t (*pfnc)(int, int);
+pfnc costFunctions[] = {
+    lane_error,
+    speed_error,
+    collision_avoid
+};
+```
