@@ -71,6 +71,12 @@ bool iterate_in_vector(std::vector<int> &v)
 std::cout << "End iteration" << '\n';
 }
 
+bool VectorOperator()
+{
+  std::vector<int> test;
+  test << 1,2,3;
+  std::cout << "test:" << test[0] << std::endl;
+}
 
 
 
