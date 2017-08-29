@@ -9,4 +9,5 @@ comp:
 	g++ -g -o ${APP}.exe ${APP}.cpp
 
 run:
-	./${APP}.exe
+	./${APP}.exe > pts.csv
+	python plot.py
