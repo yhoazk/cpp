@@ -1,4 +1,4 @@
-APP=overloaOps
+APP=overloadOps
 
 all: clean comp run
 
@@ -9,4 +9,4 @@ comp:
 	g++ -o ${APP}.exe ${APP}.cpp
 
 run:
-	./${APP}.exe 
+	./${APP}.exe
