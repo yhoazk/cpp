@@ -33,3 +33,30 @@ you have to track them even more carefully becaise double deletions are
 even more catastrophic than no deletion. Consequently, pointers to
 allocated objects do *not* have value semantics -you cannot copy and assign
 to them at will-.
+
+
+The `operator->`. When you apply `operator->` to a type that's not a
+built-in pointer, the compiler does an interesitng thing. After looking
+up and applying the user-defined `operator->` to that type, it applies
+`operator->` again to the result- The compiler keeps doing this recursively
+until it reaches a pointer to a built-in type, and only then proceeds with
+member access. It follows that a smart pointer's `operator->` does not
+have to return a pointer. It can return and object that in turn implements
+`operator->` without changinig the syntax.
+
+This leads to a very interesitng idiom: pre- and postfunction calls. If
+you return an object of type `PointerType` by value from `operator->`,
+the sequence of execution is as follows:
+1. Constructor of `PointerType`
+2. `PointerType::operator->` called, likely returns a pointer to an
+object of type `PointeeType`
+3. Member access for `PointeeType` - likely a function called.
+4. Destructor of `PointerType`
+
+
+
+To generalize the type universe of smart pointers, we distinguish three
+potentially distinct types in a smart pointer.
+* **The storage type**: This is the type of `pointee_`. By default is a raw pointer
+* **The pointer type**: This is the type returned by `operator->`. It can be different from the storage type if you want to return a proxy object instead of just a pointer.
+* **The reference type**: This is the type returned by the `operator*`.

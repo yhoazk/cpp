@@ -55,7 +55,7 @@ gcc -xc++ -E -v -
 And if the route where the libraries are is not in that list, the switch
 to add the path is `-Idir` or if the libraries are not system libraries use the switch `-idir`.
 
-## About bits/stdc++.h
+  ## About bits/stdc++.h
 
 It is basically a header file that includes every standard library. In programming contests, using this file is a good idea, when you want to reduce the time wasted in doing chores; especially when your rank is time sensitive.
 In programming contests, people do focus more on finding algorithm to solve a problem than on software engineering. From, software engineering perspective, it is a good idea to minimize the include. If you use it actually includes a lot of files, which your program may not need, thus increases both compile time and program size unnecessarily.
