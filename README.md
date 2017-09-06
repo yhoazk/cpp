@@ -33,15 +33,27 @@ int main(void)
         cout << t << endl;
         }
     }
-    return 0; 
+    return 0;
 }
 ```
 
 prints:
->0 
+>0
 >f
 >t
 
+## Show which directories gcc/g++ looks in for libraries:
+[src]()
+```
+echo | gcc -Wp,-v -x c++ - -fsyntax-only
+#or for
+gcc -xc -E -v -
+#or for c++
+gcc -xc++ -E -v -
+```
+
+And if the route where the libraries are is not in that list, the switch
+to add the path is `-Idir` or if the libraries are not system libraries use the switch `-idir`.
 
 ## About bits/stdc++.h
 
