@@ -60,5 +60,72 @@ return value
 ## Can we write one smart pointer class that works for all types?
 
 ```cpp
+#include<iostream>
+using namespace std;
+
+// A generic smart pointer class
+template <class T>
+class SmartPtr
+{
+   T *ptr;  // Actual pointer
+public:
+   // Constructor
+   explicit SmartPtr(T *p = NULL) { ptr = p; }
+
+   // Destructor
+   ~SmartPtr() { delete(ptr); }
+
+   // Overloading dereferncing operator
+   T & operator * () {  return *ptr; }
+
+   // Overloding arrow operator so that members of T can be accessed
+   // like a pointer (useful if T represents a class or struct or
+   // union type)
+   T * operator -> () { return ptr; }
+};
+
+int main()
+{
+    SmartPtr<int> ptr(new int());
+    *ptr = 20;
+    cout << *ptr;
+    return 0;
+}
+```
+
+
+```cpp
 #include <iostream>
+
+template <typename T> class sp
+{
+private:
+  T* pData;
+public:
+  SP(T* pvalue) : pData(pValue)
+  {
+
+  }
+  ~SP()
+  {
+    delete pData;
+  }
+
+  T& operator* ()
+  {
+    return *pData;
+  }
+
+  T* operator->()
+  {
+    return pData;
+  }
+};
+
+void main()
+{
+  SP<person> p (new Person("scott", 23));
+  p->display();
+}
+
 ```
