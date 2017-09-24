@@ -1,4 +1,4 @@
-PP=find_path
+APP=find_path
 
 all: clean comp run
 
