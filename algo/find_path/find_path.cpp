@@ -139,6 +139,7 @@ void set_val(std::vector<std::vector<char>>& v, size_t x, size_t y, char c)
   }
 }
 
+bool finish = false;
 
 class node
 {
@@ -176,10 +177,41 @@ public:
   {
     return false;
   }
-
+  /* The goal is to find a route to the end of the grid */
   void expand(void)
   {
-    
+    std::vector<int> pos_exp {2,0,1};
+    if( x == 0 && y == 0)
+    {
+      std::cout << "set the node first" << '\n';
+      return;
+    }
+    else
+    {
+      /* Check for boundaries */
+      if(this->x == 0)
+      {
+        pos_exp.erase(pos_exp.begin()); // turn to grapth left not possible
+      }
+      if(this->x == 2)
+      {
+        pos_exp.erase(pos_exp.begin()+2); // turn to grapth right not possible
+      }
+
+      if(this->y ==(GRID_H-1))
+      {
+        /* We reached the final block, finish! */
+        finish = true;
+      }
+      /* check if we can drive straight */
+      if('#' == (*gmap)[y+1][x])
+      {
+          std::cout << "go" << '\n';
+      }
+
+    }
+
+
   }
 };
 
@@ -208,9 +240,9 @@ int main(int argc, char const *argv[]) {
 
   std::cout << "map:" << map.size() << "x" << map[0].size() << '\n';
   /*setting Original position*/
-  while(me->found() == false)
+  while(!finish)
   {
-
+    me->expand();
   }
   print_grid(map);
   return 0;
