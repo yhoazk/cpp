@@ -268,6 +268,9 @@ std::vector<int> find_path(node* root)
     cout << "______________________________________ Queue size: " << node_queue.size() << endl;
     std::cout << "current_node x: " << current_node->x << "  y: " << current_node->y << " val: " << current_node->val << '\n';
     /* check possible paths in which the node can move */
+
+// the node being appended so it can be registered??
+
     /**/
     if(rigthmost_lane == current_node->x)
     {
