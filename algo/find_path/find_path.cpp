@@ -264,7 +264,9 @@ std::vector<int> find_path(node* root)
     next_node = nullptr;
     possible_movs = {rigthmost_lane, center_lane, leftmost_lane};
     current_node = node_queue.front();
-    std::cout << "current_node x: " << current_node->x << "  y: " << current_node->y << '\n';
+    node_queue.pop();
+    cout << "______________________________________ Queue size: " << node_queue.size() << endl;
+    std::cout << "current_node x: " << current_node->x << "  y: " << current_node->y << " val: " << current_node->val << '\n';
     /* check possible paths in which the node can move */
     /**/
     if(rigthmost_lane == current_node->x)
@@ -296,10 +298,13 @@ std::vector<int> find_path(node* root)
           inc_x = 0;
       }
 
-      next_node = node_map[ (current_node->y)+1 ][ (current_node->x)+inc_x ]; /// ‘__gnu_cxx::__alloc_traits<std::allocator<node> >::value_type {aka node}’ to ‘node*’ in assignment
+      next_node = &node_map[ (current_node->y)+1 ][ (current_node->x)+inc_x ]; /// ‘__gnu_cxx::__alloc_traits<std::allocator<node> >::value_type {aka node}’ to ‘node*’ in assignment
+      next_node->x = (current_node->x)+inc_x;
+      next_node->y = (current_node->y)+1;
 
       if('#' == next_node->val)
       {
+        std::cout << "next_node x: " << next_node->x << "  y: " << next_node->y << '\n';
         current_node->set_child(lane_id(lane), next_node);
         node_queue.push(next_node);
       }
@@ -338,6 +343,7 @@ int main(int argc, char const *argv[]) {
   set_val(node_map,1,10,'.');
                 // x y
   set_val(node_map,1,2,'O'); // setting the root node
+  set_val(node_map,1,11,'G'); // setting the root node
 
 std::vector<int> sol;
 print_grid(node_map);   //y  x
