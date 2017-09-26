@@ -9,4 +9,4 @@ comp:
 	g++ -g -std=c++11 -o ${APP}.exe ${APP}.cpp
 
 run:
-	./${APP}.exe
+	./${APP}.exe > log.log

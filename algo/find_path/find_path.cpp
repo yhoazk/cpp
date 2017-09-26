@@ -101,14 +101,15 @@ try a straight paths unless an obstacle is found.
 */
 
 
-enum lane_id {
+typedef enum lane_id {
   rigthmost_lane = 0,
   center_lane,
   leftmost_lane
   };
 using namespace std;
 
-
+bool found = false;
+bool finished = false;
 class node
 {
 public:
@@ -119,6 +120,7 @@ public:
   int x;
   int y;
   char val;
+  static std::vector<int> path;
   node(): child_expand{nullptr,nullptr,nullptr}, parent_expand{nullptr,nullptr,nullptr}, x(0),y(0), val('#')
   {
     /* Empty */
@@ -148,8 +150,8 @@ public:
   {
     return false;
   }
-  /* The goal is to find a route to the end of the grid */
-  void expand_parents(void)
+  /* return the possible paths for this node */
+  void expand(void)
   {
 
     /* check boundaries */
@@ -191,16 +193,7 @@ public:
 
   }
 };
-
-
-
-
-
-
-
-
-
-
+std::vector<int>  node::path = {};
 
 /* Crete the array of nodes */
 std::vector<std::vector<node>> node_map;
@@ -242,11 +235,11 @@ void set_val(std::vector<std::vector<node>>& v, size_t x, size_t y, char c)
   if(x < GRID_W && y < GRID_H)
   {
     v[y][x].val = c;
+    v[y][x].x = x;
+    v[y][x].y = y;
+
   }
 }
-
-bool finish = false;
-
 
 
 
@@ -256,6 +249,77 @@ bool finish = false;
 
 std::vector<int> find_path(node* root)
 {
+  std::cout << "root: O == " << root->val << '\n';
+  found = false;
+  finished = false;
+  queue<node*> node_queue;
+  node* current_node;
+  node* next_node;
+  node_queue.push(root);
+  int inc_x;
+  std::vector<int> possible_movs;
+
+  while (node_queue.empty() != true || found == true)
+  {
+    next_node = nullptr;
+    possible_movs = {rigthmost_lane, center_lane, leftmost_lane};
+    current_node = node_queue.front();
+    std::cout << "current_node x: " << current_node->x << "  y: " << current_node->y << '\n';
+    /* check possible paths in which the node can move */
+    /**/
+    if(rigthmost_lane == current_node->x)
+    {
+      possible_movs.erase( possible_movs.begin() + int(rigthmost_lane) );
+    }
+    else if(leftmost_lane == current_node->x)
+    {
+      possible_movs.erase( possible_movs.begin() + int(leftmost_lane) );
+    }
+
+
+    /* Fill the child info */
+    for(auto lane: possible_movs)
+    {
+      std::cout << "lane available: " << lane << '\n';
+      switch (lane)
+      {
+        case rigthmost_lane:
+          inc_x = -1;
+        break;
+
+        case leftmost_lane:
+          inc_x = 1;
+        break;
+
+        case center_lane:
+        default:
+          inc_x = 0;
+      }
+
+      next_node = node_map[ (current_node->y)+1 ][ (current_node->x)+inc_x ]; /// ‘__gnu_cxx::__alloc_traits<std::allocator<node> >::value_type {aka node}’ to ‘node*’ in assignment
+
+      if('#' == next_node->val)
+      {
+        current_node->set_child(lane_id(lane), next_node);
+        node_queue.push(next_node);
+      }
+      else if('G' == next_node->val)
+      {
+        found = true;
+      }
+    }
+
+  }
+
+  if(found)
+  {
+
+    return root->path;
+  }
+  else
+  {
+    return {};
+  }
 
 }
 
@@ -267,25 +331,22 @@ int main(int argc, char const *argv[]) {
   for(auto& r : node_map) /* This needs to be a reference, otherwise will generate a copy */
   {
     r.resize(GRID_W);
-    //fill(r.begin(), r.end(), '#')
   }
-  fill_grid(node_map);
+  // fill_grid(node_map);
   /* Set the obstacles */
   set_val(node_map,0,10,'.');
   set_val(node_map,1,10,'.');
+                // x y
+  set_val(node_map,1,2,'O'); // setting the root node
+
+std::vector<int> sol;
+print_grid(node_map);   //y  x
+sol = find_path(&node_map[2][1]);
 
 
   /*------------*/
-  node* me = new node;
-  //me->set_me(1,2);
-
-
   std::cout << "map:" << node_map.size() << "x" << node_map[0].size() << '\n';
   /*setting Original position*/
-  // while(!finish)
-  {
-    //me->expand();
-  }
   print_grid(node_map);
   return 0;
 }
