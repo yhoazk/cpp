@@ -94,83 +94,54 @@ try a straight paths unless an obstacle is found.
 **/
 #define GRID_W (3)
 #define GRID_H (15)
-
-using namespace std;
-
-std::vector<std::vector<char>> map;
-/* This is done by expanding the nodes, this means to watch at every position
-   if what movements are possible, and penalizing the movements and discarting
-   the impossible movemets
+/*
+#define RIGHTMOST_LANE_IDX (0)
+#define CENTER_LANE_IDX (1)
+#define LEFTMOST_LANE_IDX (2)
 */
 
-void print_grid(std::vector<std::vector<char>>& v)
-{
-  std::cout << "Print map address: " << &v << '\n';
 
-  for (size_t i = 0; i < v.size(); i++)
-  {
-    for (size_t j = 0; j < v[0].size(); j++)
-    {
-      std::cout << v[i][j];
-    }
-    std::cout  << '\n';
-  }
-  std::cout  << '\n';
+enum lane_id {
+  rigthmost_lane = 0,
+  center_lane,
+  leftmost_lane
+  };
+using namespace std;
 
-}
-
-void fill_grid(std::vector<std::vector<char>>& v)
-{
-  std::cout << "Fill map address: " << &v << '\n';
-  for (size_t i = 0; i < v.size(); i++)
-  {
-    for (size_t j = 0; j < v[0].size(); j++)
-    {
-      v[i][j] = '#';
-    }
-  }
-}
-
-void set_val(std::vector<std::vector<char>>& v, size_t x, size_t y, char c)
-{
-  if(x < GRID_W && y < GRID_H)
-  {
-    v[y][x] = c;
-  }
-}
-
-bool finish = false;
 
 class node
 {
 public:
-  bool visited;
-  node* last;
+  // bool visited; not needed as it a tree
+  // node* last; this will be implemented in the parent
   vector<node*> child_expand;
   vector<node*> parent_expand;
   int x;
   int y;
-  std::vector<std::vector<char>>* gmap;
-  node(): visited(false), last(nullptr), child_expand{nullptr,nullptr,nullptr}, parent_expand{nullptr,nullptr,nullptr}, x(0),y(0), gmap(&map)
+  char val;
+  node(): child_expand{nullptr,nullptr,nullptr}, parent_expand{nullptr,nullptr,nullptr}, x(0),y(0), val('#')
   {
     /* Empty */
   }
-  void set_me(int n_x, int n_y)
+
+  node* get_parent(enum lane_id lane)
   {
-    if((x < map[0].size()) && (y < map.size()))
-    {
-      x=n_x; y=n_y;
-      map[y][x] = 'O';
-    }
+    return this->parent_expand[lane];
   }
-  /* Sets a change in the car motion could be | / \ */
-  void set_change(int n_x, int n_y, char c)
+
+  node* get_child(enum lane_id lane)
   {
-    if((x < map[0].size()) && (y < map.size()))
-    {
-      x=n_x; y=n_y;
-      map[y][x] = c;
-    }
+    return this->child_expand[lane];
+  }
+
+  void set_parent(enum lane_id lane, node* n)
+  {
+    this->parent_expand[lane] = n;
+  }
+
+  void set_child(enum lane_id lane, node* n)
+  {
+    this->child_expand[lane] = n;
   }
 
   bool found()
@@ -178,39 +149,45 @@ public:
     return false;
   }
   /* The goal is to find a route to the end of the grid */
-  void expand(void)
+  void expand_parents(void)
   {
-    std::vector<int> pos_exp {2,0,1};
-    if( x == 0 && y == 0)
+
+    /* check boundaries */
+    if (x == rigthmost_lane)
     {
-      std::cout << "set the node first" << '\n';
-      return;
+      set_parent(rigthmost_lane, nullptr);
+      set_child(rigthmost_lane, nullptr);
+    }
+    else if (leftmost_lane == x)
+    {
+
+      set_parent(leftmost_lane, nullptr);
+      set_child(leftmost_lane, nullptr);
+    }
+
+
+    /* Fill parent information*/
+    if('O' != this->val)
+    {
+      /*if we are not root*/
+      /* check  */
+      if('.' != this->val)
+      {
+          std::cout << "/* message */" << '\n';
+      }
+
     }
     else
     {
-      /* Check for boundaries */
-      if(this->x == 0)
-      {
-        pos_exp.erase(pos_exp.begin()); // turn to grapth left not possible
-      }
-      if(this->x == 2)
-      {
-        pos_exp.erase(pos_exp.begin()+2); // turn to grapth right not possible
-      }
-
-      if(this->y ==(GRID_H-1))
-      {
-        /* We reached the final block, finish! */
-        finish = true;
-      }
-      /* check if we can drive straight */
-      if('#' == (*gmap)[y+1][x])
-      {
-          std::cout << "go" << '\n';
-      }
+      /*we are root, nothing, all the parent is already nullptr */
 
     }
 
+    /* Fill the child information */
+  }
+
+  void expand_children(void)
+  {
 
   }
 };
@@ -218,32 +195,97 @@ public:
 
 
 
+
+
+
+
+
+
+
+/* Crete the array of nodes */
+std::vector<std::vector<node>> node_map;
+/* This is done by expanding the nodes, this means to watch at every position
+   if what movements are possible, and penalizing the movements and discarting
+   the impossible movemets
+*/
+
+void print_grid(std::vector<std::vector<node>>& v)
+{
+  std::cout << "Print map address: " << &v << '\n';
+
+  for (size_t i = 0; i < v.size(); i++)
+  {
+    for (size_t j = 0; j < v[0].size(); j++)
+    {
+      std::cout << v[i][j].val;
+    }
+    std::cout  << '\n';
+  }
+  std::cout  << '\n';
+
+}
+
+void fill_grid(std::vector<std::vector<node>>& v)
+{
+  std::cout << "Fill map address: " << &v << '\n';
+  for (size_t i = 0; i < v.size(); i++)
+  {
+    for (size_t j = 0; j < v[0].size(); j++)
+    {
+      v[i][j].val = '#';
+    }
+  }
+}
+
+void set_val(std::vector<std::vector<node>>& v, size_t x, size_t y, char c)
+{
+  if(x < GRID_W && y < GRID_H)
+  {
+    v[y][x].val = c;
+  }
+}
+
+bool finish = false;
+
+
+
+
+
+/* A function will be created to parse the tree and return the path even is there's no
+  option but to remain in the same state */
+
+std::vector<int> find_path(node* root)
+{
+
+}
+
+
 int main(int argc, char const *argv[]) {
   /* Init grid */
-  std::cout << "Origianl Map address: " << &map << '\n';
-  map.resize(GRID_H);
-  for(auto& r : map) /* This needs to be a reference, otherwise will generate a copy */
+  std::cout << "Origianl Map address: " << &node_map << '\n';
+  node_map.resize(GRID_H);
+  for(auto& r : node_map) /* This needs to be a reference, otherwise will generate a copy */
   {
     r.resize(GRID_W);
     //fill(r.begin(), r.end(), '#')
   }
-  fill_grid(map);
+  fill_grid(node_map);
   /* Set the obstacles */
-  set_val(map,0,10,'.');
-  set_val(map,1,10,'.');
+  set_val(node_map,0,10,'.');
+  set_val(node_map,1,10,'.');
 
 
   /*------------*/
   node* me = new node;
-  me->set_me(1,2);
+  //me->set_me(1,2);
 
 
-  std::cout << "map:" << map.size() << "x" << map[0].size() << '\n';
+  std::cout << "map:" << node_map.size() << "x" << node_map[0].size() << '\n';
   /*setting Original position*/
-  while(!finish)
+  // while(!finish)
   {
-    me->expand();
+    //me->expand();
   }
-  print_grid(map);
+  print_grid(node_map);
   return 0;
 }
