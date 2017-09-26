@@ -302,6 +302,7 @@ std::vector<int> find_path(node* root)
       }
 
       next_node = &node_map[ (current_node->y)+1 ][ (current_node->x)+inc_x ]; /// ‘__gnu_cxx::__alloc_traits<std::allocator<node> >::value_type {aka node}’ to ‘node*’ in assignment
+      cout << "next node val: " << next_node->val << endl;
       next_node->x = (current_node->x)+inc_x;
       next_node->y = (current_node->y)+1;
 
@@ -313,6 +314,7 @@ std::vector<int> find_path(node* root)
       }
       else if('G' == next_node->val)
       {
+        cout << "FOUND" << endl;
         found = true;
       }
     }
