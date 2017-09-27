@@ -256,13 +256,16 @@ std::vector<int> find_path(node* root)
   queue<node*> node_queue;
   node* current_node;
   node* next_node;
+  node* last_node;
+  node* goal_node; // if found
   node_queue.push(root);
   int inc_x;
+  size_t g_x,g_y; // goal coordinates in the map
   std::vector<int> possible_movs;
 
   while (node_queue.empty() != true && found == false)
   {
-    next_node = nullptr;
+    next_node = nullptr; last_node = nullptr;
     possible_movs = {rigthmost_lane, center_lane, leftmost_lane};
     current_node = node_queue.front();
     node_queue.pop();
@@ -289,7 +292,6 @@ std::vector<int> find_path(node* root)
     }
 
 
-    /* Fill the child info */
     for(auto lane: possible_movs)
     {
       switch (lane)
@@ -311,10 +313,12 @@ std::vector<int> find_path(node* root)
       }
     
       next_node = &node_map[ (current_node->y)+1 ][ (current_node->x)+inc_x ]; /// ‘__gnu_cxx::__alloc_traits<std::allocator<node> >::value_type {aka node}’ to ‘node*’ in assignment
+      last_node = &node_map[ (current_node->y)-1 ][ (current_node->x)+inc_x ];
      // cout << "next node val: " << next_node->val << endl;
       next_node->x = (current_node->x)+inc_x;
       next_node->y = (current_node->y)+1;
 
+      /* Fill the child info */
       if('#' == next_node->val)
       {
        // std::cout << "next_node x: " << next_node->x << "  y: " << next_node->y << '\n';
@@ -323,9 +327,21 @@ std::vector<int> find_path(node* root)
       }
       else if('G' == next_node->val)
       {
-        cout << "FOUND" << endl;
+        cout << "\nFOUND";
+        goal_node = next_node;
+        cout << " Coordx: " << goal_node->x << " Coordy: " << goal_node->y   << endl;
         found = true;
       }
+
+      /* Fill parent info */
+      if(current_node->val != 'O')
+      {
+      }
+      else
+      {
+          /* nothing, the root parent does not expand its parents */
+      }
+
     }
     current_node->expanded = true;
 
@@ -335,7 +351,11 @@ std::vector<int> find_path(node* root)
   if(found)
   {
 
-    return root->path;
+    /* Get the used path to reach the goal node */
+    // instead of filling the parent information, lets start from the goal node and find which nodes 
+    // point to this node and create an unidemnsional vector of directions.
+     
+
   }
   else
   {
@@ -356,15 +376,16 @@ int main(int argc, char const *argv[]) {
   // fill_grid(node_map);
   /* Set the obstacles */
   set_val(node_map,0,10,'.');
-  set_val(node_map,1,10,'.');
+//  set_val(node_map,1,10,'.');
+  set_val(node_map,2,10,'.');
+  set_val(node_map,1,8,'.');
                 // x y
   set_val(node_map,1,2,'O'); // setting the root node
   set_val(node_map,1,11,'G'); // setting the root node
 
-std::vector<int> sol;
-print_grid(node_map);   //y  x
-sol = find_path(&node_map[2][1]);
-
+  std::vector<int> sol;
+  print_grid(node_map);   //y  x
+  sol = find_path(&node_map[2][1]);
 
   /*------------*/
   std::cout << "map:" << node_map.size() << "x" << node_map[0].size() << '\n';
