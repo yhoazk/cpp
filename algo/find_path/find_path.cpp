@@ -101,7 +101,7 @@ try a straight paths unless an obstacle is found.
 */
 
 
-typedef enum lane_id {
+enum lane_id {
   rigthmost_lane = 0,
   center_lane,
   leftmost_lane
@@ -121,7 +121,8 @@ public:
   int y;
   char val;
   static std::vector<int> path;
-  node(): child_expand{nullptr,nullptr,nullptr}, parent_expand{nullptr,nullptr,nullptr}, x(0),y(0), val('#')
+  bool expanded;
+  node(): child_expand{nullptr,nullptr,nullptr}, parent_expand{nullptr,nullptr,nullptr}, x(0),y(0), val('#'), expanded(false)
   {
     /* Empty */
   }
@@ -259,14 +260,20 @@ std::vector<int> find_path(node* root)
   int inc_x;
   std::vector<int> possible_movs;
 
-  while (node_queue.empty() != true || found == true)
+  while (node_queue.empty() != true && found == false)
   {
     next_node = nullptr;
     possible_movs = {rigthmost_lane, center_lane, leftmost_lane};
     current_node = node_queue.front();
     node_queue.pop();
+    if(current_node->expanded == true)
+    {
+      continue;
+    }
     cout << "______________________________________ Queue size: " << node_queue.size() << endl;
     std::cout << "current_node x: " << current_node->x << "  y: " << current_node->y << " val: " << current_node->val << '\n';
+    for(size_t i =0; i < current_node->x; ++i)
+        cout <<  "   ";
     /* check possible paths in which the node can move */
 
 // the node being appended so it can be registered??
@@ -285,30 +292,32 @@ std::vector<int> find_path(node* root)
     /* Fill the child info */
     for(auto lane: possible_movs)
     {
-      std::cout << "lane available: " << lane << '\n';
       switch (lane)
       {
         case rigthmost_lane:
+          std::cout << "/";
           inc_x = -1;
         break;
 
         case leftmost_lane:
+          std::cout << "\\";
           inc_x = 1;
         break;
 
         case center_lane:
+          std::cout << "|";
         default:
           inc_x = 0;
       }
-
+    
       next_node = &node_map[ (current_node->y)+1 ][ (current_node->x)+inc_x ]; /// ‘__gnu_cxx::__alloc_traits<std::allocator<node> >::value_type {aka node}’ to ‘node*’ in assignment
-      cout << "next node val: " << next_node->val << endl;
+     // cout << "next node val: " << next_node->val << endl;
       next_node->x = (current_node->x)+inc_x;
       next_node->y = (current_node->y)+1;
 
       if('#' == next_node->val)
       {
-        std::cout << "next_node x: " << next_node->x << "  y: " << next_node->y << '\n';
+       // std::cout << "next_node x: " << next_node->x << "  y: " << next_node->y << '\n';
         current_node->set_child(lane_id(lane), next_node);
         node_queue.push(next_node);
       }
@@ -318,7 +327,9 @@ std::vector<int> find_path(node* root)
         found = true;
       }
     }
+    current_node->expanded = true;
 
+      std::cout << "\n";
   }
 
   if(found)
