@@ -312,9 +312,9 @@ std::vector<int> find_path(node* root)
           inc_x = 0;
       }
     
-      next_node = &node_map[ (current_node->y)+1 ][ (current_node->x)+inc_x ]; /// ‘__gnu_cxx::__alloc_traits<std::allocator<node> >::value_type {aka node}’ to ‘node*’ in assignment
+      next_node = &node_map[ (current_node->y)+1 ][ (current_node->x)+inc_x ]; /// __gnu_cxx::__alloc_traits<std::allocator<node> >::value_type {aka node} to node* in assignment
       last_node = &node_map[ (current_node->y)-1 ][ (current_node->x)+inc_x ];
-     // cout << "next node val: " << next_node->val << endl;
+      // cout << "next node val: " << next_node->val << endl;
       next_node->x = (current_node->x)+inc_x;
       next_node->y = (current_node->y)+1;
 
@@ -324,13 +324,26 @@ std::vector<int> find_path(node* root)
        // std::cout << "next_node x: " << next_node->x << "  y: " << next_node->y << '\n';
         current_node->set_child(lane_id(lane), next_node);
         node_queue.push(next_node);
+        next_node->set_parent(lane_id(lane), current_node);
       }
       else if('G' == next_node->val)
       {
+        current_node->set_child(lane_id(lane), next_node);
+        next_node->set_parent(lane_id(lane), current_node);
         cout << "\nFOUND";
         goal_node = next_node;
         cout << " Coordx: " << goal_node->x << " Coordy: " << goal_node->y   << endl;
         found = true;
+        /* Now that we now IT exists a path to the goal, find the best one           */
+        /* Check which of the possible parent have a refernce to me (the child node) */
+        /* If that reference exists, then is part of the path, not otherwise         */
+        cout << "Parent size: " << goal_node->parent_expand.size() << endl;
+        if(nullptr != goal_node->parent_expand[0])  {      cout << "Parent x: " <<  goal_node->parent_expand[0]->x << " y: " << goal_node->parent_expand[0]->y << endl; } else {cout << "0-null" << endl;}
+        if(nullptr != goal_node->parent_expand[1])  {      cout << "parent! x: " << goal_node->parent_expand[1]->x << " y: " << goal_node->parent_expand[1]->y << endl;}else {cout << "1-null" << endl;}
+        if(nullptr != goal_node->parent_expand[2])  {     cout << "parent x:" << goal_node->parent_expand[2]->x << " y: " << goal_node->parent_expand[2]->y <<  endl;}else {cout << "2-null" << endl;}
+        
+
+
       }
 
       /* Fill parent info */
@@ -345,7 +358,7 @@ std::vector<int> find_path(node* root)
     }
     current_node->expanded = true;
 
-      std::cout << "\n";
+      std::cout << endl;
   }
 
   if(found)
