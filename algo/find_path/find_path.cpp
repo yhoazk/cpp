@@ -337,10 +337,14 @@ std::vector<int> find_path(node* root)
         /* Now that we now IT exists a path to the goal, find the best one           */
         /* Check which of the possible parent have a refernce to me (the child node) */
         /* If that reference exists, then is part of the path, not otherwise         */
-        cout << "Parent size: " << goal_node->parent_expand.size() << endl;
-        if(nullptr != goal_node->parent_expand[0])  {      cout << "Parent x: " <<  goal_node->parent_expand[0]->x << " y: " << goal_node->parent_expand[0]->y << endl; } else {cout << "0-null" << endl;}
-        if(nullptr != goal_node->parent_expand[1])  {      cout << "parent! x: " << goal_node->parent_expand[1]->x << " y: " << goal_node->parent_expand[1]->y << endl;}else {cout << "1-null" << endl;}
-        if(nullptr != goal_node->parent_expand[2])  {     cout << "parent x:" << goal_node->parent_expand[2]->x << " y: " << goal_node->parent_expand[2]->y <<  endl;}else {cout << "2-null" << endl;}
+        while(goal_node != root)
+        {
+            cout << "Parent size: " << goal_node->parent_expand.size() << endl;
+            if(nullptr != goal_node->parent_expand[0])  { cout << "Parent x: " << goal_node->parent_expand[0]->x << " y: " << goal_node->parent_expand[0]->y << endl; goal_node = goal_node->parent_expand[0]; } else {cout << "0-null" << endl;}
+            if(nullptr != goal_node->parent_expand[1])  { cout << "parent x: " << goal_node->parent_expand[1]->x << " y: " << goal_node->parent_expand[1]->y << endl; goal_node = goal_node->parent_expand[1]; } else {cout << "1-null" << endl;}
+            if(nullptr != goal_node->parent_expand[2])  { cout << "parent x: " << goal_node->parent_expand[2]->x << " y: " << goal_node->parent_expand[2]->y << endl; goal_node = goal_node->parent_expand[2]; } else {cout << "2-null" << endl;}
+
+        }
         
 
 
