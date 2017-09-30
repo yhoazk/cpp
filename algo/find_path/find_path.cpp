@@ -2,6 +2,7 @@
 #include <vector>
 #include <queue>
 #include <algorithm>
+#include <string>
 /**
 This program find the path of the '0' in order to keep moving forward
 it will use a simplie scheme as there's no goal per se.
@@ -347,6 +348,25 @@ std::vector<char> find_path(node* root)
 }
 
 
+void print_resuls(vector<char>& s)
+{
+  reverse(s.begin(), s.end());
+  for(size_t i=0; i < s.size(); ++i)
+  {
+    switch(s[i]){
+      case '|':
+        cout << "Keep on the same lane" << endl;
+        break;
+      case '\\':
+        cout << "Change to left lane" << endl;
+        break;
+      case '/':
+        cout << "Change to right lane" << endl;
+        break;
+    }
+  }
+}
+
 int main(int argc, char const *argv[]) {
   /* Init grid */
   std::cout << "Original Map address: " << &node_map << '\n';
@@ -357,7 +377,7 @@ int main(int argc, char const *argv[]) {
   }
   set_val(node_map,0,10,'.');
   set_val(node_map,1,10,'.');
-  set_val(node_map,2,1,'.');
+  set_val(node_map,2,5,'.');
                 // x y
   set_val(node_map,0,2,'O'); // setting the root node
   set_val(node_map,0,13,'G'); // setting the root node
@@ -365,9 +385,10 @@ int main(int argc, char const *argv[]) {
   std::vector<char> sol;
   print_grid(node_map);   //y  x
   sol = find_path(&node_map[2][0]);
-
+  
   /*------------*/
   std::cout << "map:" << node_map.size() << "x" << node_map[0].size() << '\n';
+  print_resuls(sol);
   /*setting Original position*/
   return 0;
 }
