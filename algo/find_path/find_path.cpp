@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <queue>
+#include <algorithm>
 /**
 This program find the path of the '0' in order to keep moving forward
 it will use a simplie scheme as there's no goal per se.
@@ -205,13 +206,15 @@ std::vector<std::vector<node>> node_map;
 
 void print_grid(std::vector<std::vector<node>>& v)
 {
-  std::cout << "Print map address: " << &v << '\n';
-
+  std::cout << "   0 1 2" << '\n';
+  
   for (size_t i = 0; i < v.size(); i++)
   {
+    std::cout.width(2);
+    std::cout <<  i << '|' << ' ';
     for (size_t j = 0; j < v[0].size(); j++)
     {
-      std::cout << v[i][j].val;
+      std::cout << v[i][j].val << ' ';
     }
     std::cout  << '\n';
   }
@@ -241,8 +244,40 @@ void set_val(std::vector<std::vector<node>>& v, size_t x, size_t y, char c)
 
   }
 }
+vector<char> solution_path;
+node* check_parent(node* n)
+{
+  char decoder[] = {'/','|','\\'};
+  static const vector<size_t> prio = {1,2,0}; // first keep lane, second left, tird right
+  //vector<node*> result = {nullptr, nullptr, nullptr};
+  node* result;// = {nullptr, nullptr, nullptr};
+  int refs = 0; //number of encountered references
+  size_t i = 0;
 
+  for(auto k: prio)
+  {
+    if(nullptr != n->parent_expand[k]) 
+    {
+        cout << decoder[k];
+        result = n->parent_expand[k];
+        result->val = decoder[k];
+        ++refs;
+        break;
+    }
+  }
 
+  if(refs > 1)
+  {
+    cout << "TWO or more references found" << endl << endl;
+
+  }
+  else
+  {
+
+  }
+  print_grid(node_map);
+  return result;
+}
 
 
 /* A function will be created to parse the tree and return the path even is there's no
@@ -266,7 +301,7 @@ std::vector<int> find_path(node* root)
   while (node_queue.empty() != true && found == false)
   {
     next_node = nullptr; last_node = nullptr;
-    possible_movs = {rigthmost_lane, center_lane, leftmost_lane};
+    possible_movs = {center_lane, leftmost_lane,  rigthmost_lane};
     current_node = node_queue.front();
     node_queue.pop();
     if(current_node->expanded == true)
@@ -284,30 +319,32 @@ std::vector<int> find_path(node* root)
     /**/
     if(rigthmost_lane == current_node->x)
     {
-      possible_movs.erase( possible_movs.begin() + int(rigthmost_lane) );
+      possible_movs.erase( possible_movs.begin() +  2);
     }
     else if(leftmost_lane == current_node->x)
     {
-      possible_movs.erase( possible_movs.begin() + int(leftmost_lane) );
+      possible_movs.erase( possible_movs.begin() + 1 );
     }
 
-
+    /*By reversing the elements the move to the left comes first in prio*/
+    //reverse(possible_movs.begin(), possible_movs.end());
+    char decode_show[] = {'/','|','\\'};
     for(auto lane: possible_movs)
     {
       switch (lane)
       {
         case rigthmost_lane:
-          std::cout << "/";
+//          std::cout << "/";
           inc_x = -1;
         break;
 
         case leftmost_lane:
-          std::cout << "\\";
+//          std::cout << "\\";
           inc_x = 1;
         break;
 
         case center_lane:
-          std::cout << "|";
+//          std::cout << "|";
         default:
           inc_x = 0;
       }
@@ -322,12 +359,14 @@ std::vector<int> find_path(node* root)
       if('#' == next_node->val)
       {
        // std::cout << "next_node x: " << next_node->x << "  y: " << next_node->y << '\n';
+        cout << decode_show[lane];
         current_node->set_child(lane_id(lane), next_node);
         node_queue.push(next_node);
         next_node->set_parent(lane_id(lane), current_node);
       }
       else if('G' == next_node->val)
       {
+        cout << decode_show[lane];
         current_node->set_child(lane_id(lane), next_node);
         next_node->set_parent(lane_id(lane), current_node);
         cout << "\nFOUND";
@@ -339,11 +378,13 @@ std::vector<int> find_path(node* root)
         /* If that reference exists, then is part of the path, not otherwise         */
         while(goal_node != root)
         {
+#if 0
             cout << "Parent size: " << goal_node->parent_expand.size() << endl;
             if(nullptr != goal_node->parent_expand[0])  { cout << "Parent x: " << goal_node->parent_expand[0]->x << " y: " << goal_node->parent_expand[0]->y << endl; goal_node = goal_node->parent_expand[0]; } else {cout << "0-null" << endl;}
             if(nullptr != goal_node->parent_expand[1])  { cout << "parent x: " << goal_node->parent_expand[1]->x << " y: " << goal_node->parent_expand[1]->y << endl; goal_node = goal_node->parent_expand[1]; } else {cout << "1-null" << endl;}
             if(nullptr != goal_node->parent_expand[2])  { cout << "parent x: " << goal_node->parent_expand[2]->x << " y: " << goal_node->parent_expand[2]->y << endl; goal_node = goal_node->parent_expand[2]; } else {cout << "2-null" << endl;}
-
+#endif
+            goal_node = check_parent(goal_node);
         }
         
 
@@ -393,8 +434,8 @@ int main(int argc, char const *argv[]) {
   // fill_grid(node_map);
   /* Set the obstacles */
   set_val(node_map,0,10,'.');
-//  set_val(node_map,1,10,'.');
-  set_val(node_map,2,10,'.');
+  set_val(node_map,2,8,'.');
+//  set_val(node_map,2,10,'.');
   set_val(node_map,1,8,'.');
                 // x y
   set_val(node_map,1,2,'O'); // setting the root node
@@ -407,6 +448,6 @@ int main(int argc, char const *argv[]) {
   /*------------*/
   std::cout << "map:" << node_map.size() << "x" << node_map[0].size() << '\n';
   /*setting Original position*/
-  print_grid(node_map);
+//  print_grid(node_map);
   return 0;
 }
