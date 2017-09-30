@@ -95,18 +95,13 @@ try a straight paths unless an obstacle is found.
 **/
 #define GRID_W (3)
 #define GRID_H (15)
-/*
-#define RIGHTMOST_LANE_IDX (0)
-#define CENTER_LANE_IDX (1)
-#define LEFTMOST_LANE_IDX (2)
-*/
 
-
-enum lane_id {
+enum lane_id
+{
   rigthmost_lane = 0,
   center_lane,
   leftmost_lane
-  };
+};
 using namespace std;
 
 bool found = false;
@@ -121,7 +116,6 @@ public:
   int x;
   int y;
   char val;
-  static std::vector<int> path;
   bool expanded;
   node(): child_expand{nullptr,nullptr,nullptr}, parent_expand{nullptr,nullptr,nullptr}, x(0),y(0), val('#'), expanded(false)
   {
@@ -147,55 +141,7 @@ public:
   {
     this->child_expand[lane] = n;
   }
-
-  bool found()
-  {
-    return false;
-  }
-  /* return the possible paths for this node */
-  void expand(void)
-  {
-
-    /* check boundaries */
-    if (x == rigthmost_lane)
-    {
-      set_parent(rigthmost_lane, nullptr);
-      set_child(rigthmost_lane, nullptr);
-    }
-    else if (leftmost_lane == x)
-    {
-
-      set_parent(leftmost_lane, nullptr);
-      set_child(leftmost_lane, nullptr);
-    }
-
-
-    /* Fill parent information*/
-    if('O' != this->val)
-    {
-      /*if we are not root*/
-      /* check  */
-      if('.' != this->val)
-      {
-          std::cout << "/* message */" << '\n';
-      }
-
-    }
-    else
-    {
-      /*we are root, nothing, all the parent is already nullptr */
-
-    }
-
-    /* Fill the child information */
-  }
-
-  void expand_children(void)
-  {
-
-  }
 };
-std::vector<int>  node::path = {};
 
 /* Crete the array of nodes */
 std::vector<std::vector<node>> node_map;
@@ -285,7 +231,6 @@ node* check_parent(node* n)
 
 std::vector<int> find_path(node* root)
 {
-  std::cout << "root: O == " << root->val << '\n';
   found = false;
   finished = false;
   queue<node*> node_queue;
@@ -334,17 +279,14 @@ std::vector<int> find_path(node* root)
       switch (lane)
       {
         case rigthmost_lane:
-//          std::cout << "/";
           inc_x = -1;
         break;
 
         case leftmost_lane:
-//          std::cout << "\\";
           inc_x = 1;
         break;
 
         case center_lane:
-//          std::cout << "|";
         default:
           inc_x = 0;
       }
@@ -378,45 +320,20 @@ std::vector<int> find_path(node* root)
         /* If that reference exists, then is part of the path, not otherwise         */
         while(goal_node != root)
         {
-#if 0
-            cout << "Parent size: " << goal_node->parent_expand.size() << endl;
-            if(nullptr != goal_node->parent_expand[0])  { cout << "Parent x: " << goal_node->parent_expand[0]->x << " y: " << goal_node->parent_expand[0]->y << endl; goal_node = goal_node->parent_expand[0]; } else {cout << "0-null" << endl;}
-            if(nullptr != goal_node->parent_expand[1])  { cout << "parent x: " << goal_node->parent_expand[1]->x << " y: " << goal_node->parent_expand[1]->y << endl; goal_node = goal_node->parent_expand[1]; } else {cout << "1-null" << endl;}
-            if(nullptr != goal_node->parent_expand[2])  { cout << "parent x: " << goal_node->parent_expand[2]->x << " y: " << goal_node->parent_expand[2]->y << endl; goal_node = goal_node->parent_expand[2]; } else {cout << "2-null" << endl;}
-#endif
             goal_node = check_parent(goal_node);
         }
-        
 
-
-      }
-
-      /* Fill parent info */
-      if(current_node->val != 'O')
-      {
-      }
-      else
-      {
-          /* nothing, the root parent does not expand its parents */
       }
 
     }
     current_node->expanded = true;
-
-      std::cout << endl;
+    std::cout << endl;
   }
 
-  if(found)
+  if(!found)
   {
-
-    /* Get the used path to reach the goal node */
-    // instead of filling the parent information, lets start from the goal node and find which nodes 
-    // point to this node and create an unidemnsional vector of directions.
-     
-
-  }
-  else
-  {
+    /* There's no possible path to the to the goal*/
+    cout << "NO PATH!!!!!!!!!!1" << endl;
     return {};
   }
 
@@ -431,23 +348,19 @@ int main(int argc, char const *argv[]) {
   {
     r.resize(GRID_W);
   }
-  // fill_grid(node_map);
-  /* Set the obstacles */
   set_val(node_map,0,10,'.');
-  set_val(node_map,2,8,'.');
-//  set_val(node_map,2,10,'.');
-  set_val(node_map,1,8,'.');
+  set_val(node_map,1,10,'.');
+  set_val(node_map,2,1,'.');
                 // x y
-  set_val(node_map,1,2,'O'); // setting the root node
-  set_val(node_map,1,11,'G'); // setting the root node
+  set_val(node_map,0,2,'O'); // setting the root node
+  set_val(node_map,0,11,'G'); // setting the root node
 
   std::vector<int> sol;
   print_grid(node_map);   //y  x
-  sol = find_path(&node_map[2][1]);
+  sol = find_path(&node_map[2][0]);
 
   /*------------*/
   std::cout << "map:" << node_map.size() << "x" << node_map[0].size() << '\n';
   /*setting Original position*/
-//  print_grid(node_map);
   return 0;
 }
