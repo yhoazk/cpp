@@ -10,3 +10,4 @@ comp:
 
 run:
 	./${APP}.exe > log.log
+	cat log.log

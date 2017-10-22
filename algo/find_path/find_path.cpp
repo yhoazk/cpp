@@ -154,7 +154,7 @@ std::vector<std::vector<node>> node_map;
 void print_grid(std::vector<std::vector<node>>& v)
 {
   std::cout << "   0 1 2" << '\n';
-  
+
   for (size_t i = 0; i < v.size(); i++)
   {
     std::cout.width(2);
@@ -202,7 +202,7 @@ node* check_parent(node* n, vector<char>& sol)
 
   for(auto k: prio)
   {
-    if(nullptr != n->parent_expand[k]) 
+    if(nullptr != n->parent_expand[k])
     {
         cout << decoder[k];
         sol.push_back(decoder[k]);
@@ -272,6 +272,8 @@ std::vector<char> find_path(node* root)
       possible_movs.erase( possible_movs.begin() + 1 );
     }
 
+
+
     /*By reversing the elements the move to the left comes first in prio*/
     //reverse(possible_movs.begin(), possible_movs.end());
     char decode_show[] = {'/','|','\\'};
@@ -291,11 +293,14 @@ std::vector<char> find_path(node* root)
         default:
           inc_x = 0;
       }
-    
+
       next_node = &node_map[ (current_node->y)+1 ][ (current_node->x)+inc_x ];
       next_node->x = (current_node->x)+inc_x;
       next_node->y = (current_node->y)+1;
-      
+
+
+
+
       if(next_node->y > 13)
       {
         cout << "ENDD"<< endl;
@@ -304,7 +309,7 @@ std::vector<char> find_path(node* root)
       if('#' == next_node->val)
       {
        // std::cout << "next_node x: " << next_node->x << "  y: " << next_node->y << '\n';
-        cout << decode_show[lane];
+        // cout << decode_show[lane];
         current_node->set_child(lane_id(lane), next_node);
         node_queue.push(next_node);
         next_node->set_parent(lane_id(lane), current_node);
@@ -375,17 +380,17 @@ int main(int argc, char const *argv[]) {
   {
     r.resize(GRID_W);
   }
-  set_val(node_map,0,10,'.');
-  set_val(node_map,1,10,'.');
-  set_val(node_map,2,5,'.');
+  set_val(node_map,0,6,'.');
+  set_val(node_map,1,8,'.');
+  set_val(node_map,2,6,'.');
                 // x y
-  set_val(node_map,0,2,'O'); // setting the root node
+  set_val(node_map,1,2,'O'); // setting the root node
   set_val(node_map,0,13,'G'); // setting the root node
 
   std::vector<char> sol;
   print_grid(node_map);   //y  x
-  sol = find_path(&node_map[2][0]);
-  
+  sol = find_path(&node_map[2][1]);
+
   /*------------*/
   std::cout << "map:" << node_map.size() << "x" << node_map[0].size() << '\n';
   print_resuls(sol);
