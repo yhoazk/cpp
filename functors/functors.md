@@ -42,3 +42,5 @@ int main()
     }
 } 
 ```
+
+A functor is what a closure is for functional programing.
