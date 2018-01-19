@@ -105,3 +105,39 @@ pfnc costFunctions[] = {
     collision_avoid
 };
 ```
+
+
+## Aliases
+
+### `namespace` 
+- Namespace aliases allow the programmer to define an alternate name for a namespace.
+- They are commonly used as a convenient shortcut for long or deeply-nested namespaces.
+
+```c
+#include <iostream>
+namespace taco{
+  namespace tortilla{
+    namespace cosa {
+      int value = 42;
+    }
+  }
+}
+namespace x = taco::tortilla::cosa;
+int main()
+{
+ std::cout << x::value << std::endl;
+ return 0;
+}
+```
+
+### [`types`](http://en.cppreference.com/w/cpp/language/type_alias)
+Type alias is a name that refers to a previously defined type (similar to typedef)
+
+```cpp
+using Vec = vector<T, Alloc<T>>; // type-id is vector<T, Alloc<T>>
+```
+
+## `template<class T>` vs `template<typename T>`
+
+
+    
