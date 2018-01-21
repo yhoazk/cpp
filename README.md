@@ -5,11 +5,27 @@ c++
 
 ### Difference for `++i` and `i++`
 
-[http://www.embedded.com/design/programming-languages-and-tools/4410601/Pre-increment-or-post-increment-in-C-C-](http://www.embedded.com/design/programming-languages-and-tools/4410601/Pre-increment-or-post-increment-in-C-C-)
+[Src](http://www.embedded.com/design/programming-languages-and-tools/4410601/Pre-increment-or-post-increment-in-C-C-)
 
-For the case when:
+For the case in this simple application:
+```cpp
+#include <iostream>
+int main(int argc, char const *argv[]) {
+  for (size_t i = 0; i < count; i++) {
+    std::cout << i << '\n';
+  }
+  return 0;
+}
+
 ```
-```
+The Src article mentions that `++i` it's better than `i++` because `++i` does not
+generates an intermediate storage variable, which is needed by `i++` to store the
+current value while the operation is being executed.
+
+Our test didn't find the mentioned behaviour, the test results are in [post_pre_inc](./post_pre_inc).
+Which found that identiacal ASM code is being generated for gcc (GCC) 6.3.1 20161221 (Red Hat 6.3.1-1).
+
+ 
 
 
 #### Creating scopes with brackets
@@ -109,7 +125,7 @@ pfnc costFunctions[] = {
 
 ## Aliases
 
-### `namespace` 
+### `namespace`
 - Namespace aliases allow the programmer to define an alternate name for a namespace.
 - They are commonly used as a convenient shortcut for long or deeply-nested namespaces.
 
@@ -138,6 +154,3 @@ using Vec = vector<T, Alloc<T>>; // type-id is vector<T, Alloc<T>>
 ```
 
 ## `template<class T>` vs `template<typename T>`
-
-
-    
