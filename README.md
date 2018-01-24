@@ -3,6 +3,13 @@ c++
 
 
 
+## Iterators
+
+For iterators prefer the member functions cbeing and cend instead of the
+`std::begin`, `std:end` this way is clear that they are innmutable.
+
+
+
 ### Difference for `++i` and `i++`
 
 [Src](http://www.embedded.com/design/programming-languages-and-tools/4410601/Pre-increment-or-post-increment-in-C-C-)
@@ -25,7 +32,7 @@ current value while the operation is being executed.
 Our test didn't find the mentioned behaviour, the test results are in [post_pre_inc](./post_pre_inc).
 Which found that identiacal ASM code is being generated for gcc (GCC) 6.3.1 20161221 (Red Hat 6.3.1-1).
 
- 
+
 
 
 #### Creating scopes with brackets
@@ -54,9 +61,11 @@ int main(void)
 ```
 
 prints:
+```
 >0
 >f
 >t
+```
 
 ## Show which directories gcc/g++ looks in for libraries:
 [src]()
@@ -71,7 +80,7 @@ gcc -xc++ -E -v -
 And if the route where the libraries are is not in that list, the switch
 to add the path is `-Idir` or if the libraries are not system libraries use the switch `-idir`.
 
-  ## About bits/stdc++.h
+## About bits/stdc++.h
 
 It is basically a header file that includes every standard library. In programming contests, using this file is a good idea, when you want to reduce the time wasted in doing chores; especially when your rank is time sensitive.
 In programming contests, people do focus more on finding algorithm to solve a problem than on software engineering. From, software engineering perspective, it is a good idea to minimize the include. If you use it actually includes a lot of files, which your program may not need, thus increases both compile time and program size unnecessarily.
@@ -82,6 +91,7 @@ bits/stdc++.h is not a standard header file of GNU C++ library. So, if you try t
 Using it would include a lot of unnecessary stuff and increases compilation time.
 This header file is not part of the C++ standard, is therefore non-portable, and should be avoided.
 Moreover, even if there were some catch-all header in the standard, you would want to avoid it in lieu of specific headers, since the compiler has to actually read in and parse every included header (including recursively included headers) every single time that translation unit is compiled.
+
 Advantages of bits/stdc++
 
 In contests, using this file is a good idea, when you want to reduce the time wasted in doing chores; especially when your rank is time sensitive.
@@ -105,11 +115,9 @@ A function is reentrant if:
 >it can be interrupted at any point during its execution and then safely called again ("re-entered") before its previous invocations complete execution.
 
 
-## Eigen library:
+## [Eigen library:](https://eigen.tuxfamily.org/dox/group__TutorialMatrixClass.html)
 
-https://eigen.tuxfamily.org/dox/group__TutorialMatrixClass.html
-
-
+Look at [Eigen](./Eigen)
 
 ## Pointer to functions:
 
@@ -129,7 +137,7 @@ pfnc costFunctions[] = {
 - Namespace aliases allow the programmer to define an alternate name for a namespace.
 - They are commonly used as a convenient shortcut for long or deeply-nested namespaces.
 
-```c
+```cpp
 #include <iostream>
 namespace taco{
   namespace tortilla{
@@ -146,7 +154,7 @@ int main()
 }
 ```
 
-### [`types`](http://en.cppreference.com/w/cpp/language/type_alias)
+### [`Types`](http://en.cppreference.com/w/cpp/language/type_alias)
 Type alias is a name that refers to a previously defined type (similar to typedef)
 
 ```cpp
@@ -154,3 +162,13 @@ using Vec = vector<T, Alloc<T>>; // type-id is vector<T, Alloc<T>>
 ```
 
 ## `template<class T>` vs `template<typename T>`
+
+For template declarations either `class` or `typename` can be used. Apparently
+there is no difference between them.
+
+* Some prefer to use `typename` as does not overloads the behaviour of the `class`
+keyword.
+* Others use `class` or `typename` as a hint for the user of the code. If `class`
+ is used, then an `class` is expected.
+* Some point that a `template template`  parameters there is difference, this
+ difference will be fixed in C++17
