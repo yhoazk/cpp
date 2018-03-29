@@ -1,2 +1,2 @@
-This example demostrates how the thread fails if the thread is not finished.
-A join is needed.
+In this example the thread is detached, and no output is shown
+as the stdout is not redirected 
