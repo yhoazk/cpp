@@ -6,3 +6,6 @@
 *.swp
 
 pts.csv
+
+
+bazel-*
