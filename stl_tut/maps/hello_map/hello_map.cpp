@@ -5,6 +5,19 @@
 #include <exception>
 using namespace std;
 
+/* Maps for enums */
+
+enum class ErrorReturnType : uint8_t {
+ kSuccess = 0,
+ kFailArg = 1,
+ kWtf     = 2
+};
+
+map<ErrorReturnType, const string> decode_error = {
+  {ErrorReturnType::kSuccess, "AOk"},
+  {ErrorReturnType::kFailArg, "Arg failure"},
+  {ErrorReturnType::kWtf, "dunno"},
+};
 
 void map_of_vectors(void)
 {
@@ -58,6 +71,8 @@ int main(int argc, char const *argv[]) {
   map_test['c'] = "colo";
   map_test['d'] = "dedo";
 
+  /* Decode error enums with a map */
+  std::cout << "Success: " << decode_error[ErrorReturnType::kSuccess] << std::endl;
   std::cout << "map_test[a]: " << map_test['a']  <<  std::endl;
   std::cout << "map_test[b]: " << map_test['b']  <<  std::endl;
   std::cout << "map_test[c]: " << map_test['c']  <<  std::endl;
