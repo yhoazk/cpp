@@ -173,3 +173,11 @@ keyword.
  is used, then an `class` is expected.
 * Some point that a `template template`  parameters there is difference, this
  difference will be fixed in C++17
+
+
+## `mutable` vs `volatile`
+
+The mutable and the volatile, both describe an object that can change out-of scope.
+The `mutable` field can be changed even in an object accessed through a `const`
+pointer or reference; or in a `const` object, so the compiler knows not to stash
+it in registers or R/O memory. 

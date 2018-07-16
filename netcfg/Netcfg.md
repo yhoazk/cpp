@@ -55,3 +55,16 @@ At present. if the file is not available, Bazel falls back to its previous
 hard-coded implementation.
 
 Example of [`crosstool_config.proto`](https://github.com/bazelbuild/bazel/blob/3f611ab4ee905c09aff05f8fd8f19517be54efa6/src/main/protobuf/crosstool_config.proto)
+
+
+### Relevant man pages
+
+```
+man 7 proc
+man 7 capabilites
+man 7 ip
+man 7 rtnetlink
+man 7 netdevice
+```
+
+### AF_UNIX vs AF_INET
