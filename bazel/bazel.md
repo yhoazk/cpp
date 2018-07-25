@@ -1,4 +1,4 @@
-# [Bazel](https://docs.bazel.build/versions/master/tutorial/cpp.html)
+#[Bazel](https://docs.bazel.build/versions/master/tutorial/cpp.html)
 
 Tutorial to start with bazel build system.
 
@@ -24,5 +24,7 @@ ccache: error: Failed to create temporary file for /tmp/tmp.cpp_stderr: Read-onl
 Target //src:hello failed to build
 Use --verbose_failures to see the command lines of failed build steps.
 INFO: Elapsed time: 2.376s, Critical Path: 0.06s
-
 ```
+
+
+
