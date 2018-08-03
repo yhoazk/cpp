@@ -9,3 +9,4 @@ pts.csv
 
 
 bazel-*
+obj_pose*.txt
