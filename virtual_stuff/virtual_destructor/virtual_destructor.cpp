@@ -22,16 +22,16 @@ class derived : public nonVirtDestrBase{
 
 };
 
-
+// TODO: Create constructors to visualize the reverse order ctor dtor
 int main(int, char**)
 {
-    // object with automatic storage, mainly stack
+    // object with automatic storage, mainly stack are called as "normal" vars
     {
       derived d;
       d.getVal();
     } // As the object is in automatic storage and is not longer referenced is deleted.
     std::cout << "flushing" << std::endl;
-    // object with dynamic stirage, mainly the heap.
+    // object with dynamic stirage, mainly the heap. are called with the new operator.
     derived* dd = new derived();
     dd->getVal();
     delete dd;
