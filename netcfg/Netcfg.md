@@ -20,6 +20,10 @@ gcc -E -xc++ -v
 - Shall handle errors in input
 - Shall check for errors in the systemcalls that it may need.
 - Shall handle errors in the actions it perfomrs.
+- The application has to be able to change the interface from static to automatic
+configuration based on the status of a bit flag. This can be implemented as a 
+generic interface to check the state.
+- Use the rapid json library to parse the input.
 
 ## Tools
 
@@ -68,3 +72,7 @@ man 7 netdevice
 ```
 
 ### AF_UNIX vs AF_INET
+
+
+
+
