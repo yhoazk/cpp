@@ -13,7 +13,7 @@ void log_worker(size_t idx){
     std::cout << idx;
     size_t messages = MESSAGES_PER_WORKER;
     while(messages--){
-        std::cout << "thid:" << idx << " N: " << messages;
+        std::cout << "thid:" << idx << " N: " << messages << '\n';
     }
 }
 
