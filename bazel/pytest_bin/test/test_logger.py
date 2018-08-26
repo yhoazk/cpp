@@ -14,9 +14,10 @@ def test_logger(capsys):
     logged_text = []
     print("-------- Out --------")
     for l in out:
-        res = re.findall("thid:\d+\s+N:\s+\d+", l)
-        if len(res) == 1:
-            print(res)
+        res = re.match("thid:(\d+)\s+N:\s+(\d+)", l)
+        if res is not None and len(res.groups()) > 0:
+            print("all={}  n: {} id: {}".format(res.group(0), res.group(1), res.group(2)) )
+            logged_text.append(int(res.group(2)))
         else:
             print("Malformed log: {}".format(l))
     print("-------- Out --------")
@@ -24,6 +25,7 @@ def test_logger(capsys):
     print("-------- Err --------")
     print(err)
     print("-------- Err --------")
+    print(sorted(logged_text))
     assert False
 
 def test_logg_fail():
