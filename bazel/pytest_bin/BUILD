@@ -13,6 +13,6 @@ py_test(
     name = "test_logger",
     srcs = ["test/test_logger.py"],
     data = [
-        ":logger_generator"
-    ]
+        ":logger_generator" # This creates the depencency to the binary defined up
+    ],
 )
