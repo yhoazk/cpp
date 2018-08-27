@@ -1,13 +1,20 @@
 import pytest
 import subprocess
-import bubblewrap
+import psutil 
 import sys, os
 import re
 
 def test_logger(capsys):
     print(os.listdir("."))
     #with open("log_gen") as log:
-    logger = subprocess.Popen("logger_generator", stdout=subprocess.PIPE)
+    app = "logger_generator"
+
+    cmd = """strace /usr/bin/bwrap \
+    --dev-bind / /  \
+    --setenv PATH . \
+    {app}""".format(app=app).split()
+
+    logger = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     out,err=logger.communicate()
     # Communicate returns a bunch of bytes, we need to parse them to ascii
     out = [l.decode("ascii") for l in out.splitlines()]
