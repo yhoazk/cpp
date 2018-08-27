@@ -5,18 +5,26 @@ import sys, os
 import re
 
 def test_logger(capsys):
-    pwd = os.path.relpath(".")
+    pwd = os.path.abspath(".")
+    bin_dir = str(os.path.dirname(os.readlink("logger_generator")))
+    print(os.readlink("logger_generator"))
+    print(pwd)
+    print(pwd)
+    print(pwd)
+    print(pwd)
     #with open("log_gen") as log:
     app = "logger_generator"
     # we need to get the real location as the logger app is a link
+    # it will be possible to acces the link src as its outside of
+    # the binded dirs
     cmd = """/usr/bin/bwrap \
     --ro-bind /usr /usr  \
-    --ro-bind {pwd} /bin \
+    --ro-bind {bin_dir} /bin \
     --symlink usr/lib64 /lib64 \
     --proc /proc \
     --dev /dev \
     --unshare-pid \
-    /bin/logger_generator""".format(pwd=pwd, app=app).split() 
+    /bin/logger_generator""".format(bin_dir=bin_dir, app=app).split() #ls -athl /bin/logger_generator
 
     logger = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     out,err=logger.communicate()
