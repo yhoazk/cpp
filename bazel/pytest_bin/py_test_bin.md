@@ -5,12 +5,9 @@ Sample to get a `py_test` and a binary dependency in it.
 The sample runs and the test gets the logged output to verify the 
 behaviour.
 
-
 ## Writing tests with `pytest`
 
 ### Skipping tests
-
-
 
 ### Marking a test as expected to fail
 
@@ -37,7 +34,6 @@ if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
 ```
 
-
 ## Build
 
 ```sh
@@ -45,6 +41,7 @@ bazel build --strategy=CppCompile=standalone //...
 ```
 
 ## Test
+
 https://docs.bazel.build/versions/master/command-line-reference.html#test
 
 ```sh

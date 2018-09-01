@@ -15,7 +15,7 @@ Bazel has the "feature" that **everyting** must be specified, then for a simple
 example like this example_1 the compilation as it is it will fail with the next
 message:
 
-```
+```log
 Extracting Bazel installation...
 .............
 INFO: Found 1 target...
@@ -25,7 +25,6 @@ Target //src:hello failed to build
 Use --verbose_failures to see the command lines of failed build steps.
 INFO: Elapsed time: 2.376s, Critical Path: 0.06s
 ```
-
 
 #### Error: `ccache: error: Failed to create temporary file`
 
