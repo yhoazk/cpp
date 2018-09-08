@@ -3,15 +3,12 @@ import subprocess
 import psutil 
 import sys, os
 import re
+import logging
 
-def test_logger(capsys):
-    pwd = os.path.abspath(".")
+def test_logger(capsys, tmpdir):
+    logging.error(os.listdir("."))
     bin_dir = str(os.path.dirname(os.readlink("logger_generator")))
     print(os.readlink("logger_generator"))
-    print(pwd)
-    print(pwd)
-    print(pwd)
-    print(pwd)
     #with open("log_gen") as log:
     app = "logger_generator"
     # we need to get the real location as the logger app is a link
