@@ -1,8 +1,6 @@
 # C++
 c++
 
-https://www.feabhas.com/sites/default/files/2016-06/Rule%20of%20the%20Big%20Five.pdf
-http://www.stroustrup.com/sle2011-concepts.pdf
 
 ## Iterators
 

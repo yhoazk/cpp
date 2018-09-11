@@ -46,19 +46,18 @@ public:
 
     class looponce<0>{
         public:
-        static void EXEC(){std::cout <<end<<std::endl;}
+            static void EXEC(){std::cout <<end<<std::endl;}
     };
 };
 
-
-main(int argc, char const *argv[])
+int main(int argc, char const *argv[])
 {
     //This for goes for the number of bits that are on (1)
     for(unsigned char i=0; i < BITS_SET<0xFF>::RESULT; ++i){
         std::cout << "\ni: " << i + 0; // This looks dumb, but with out the 0 the chars are printed as hex 
     }
 //    std::cout << "Factorial of 5 is: " << FACTOR<5>::RESULT;
-    loop<0,1,10>::EXEC();
+    loop<10,1,0>::EXEC();
     std::cout << std::endl;
     return 0;
 }
