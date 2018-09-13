@@ -1,6 +1,4 @@
 # C++
-c++
-
 
 ## Iterators
 
