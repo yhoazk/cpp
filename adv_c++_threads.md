@@ -203,3 +203,92 @@ std::map<int, std::string>& Foo::strings(){
 
 The initializaion order of static varibles is random, leading to non-deterministic
 behaviour, the solution is basically kame the initialization explicit
+
+
+
+### Atomic Operations
+
+#### GCC Compiler specifics
+
+GCC comes with a set of built-in atomic functions, used on larger number of
+platforms and operating systems.
+
+```
+type __sync_add_and_fetch(type *ptr, type value, ...)
+type __sync_sub_and_fetch(type *ptr, type value, ...)
+type __sync_or_and_fetch(type *ptr, type value, ...)
+```
+
+To create a full memory barrier, use the funciton `__sync_synchronize()`.
+
+C++11 adds changes the API, first adds the next methods:
+```
+type __atomic_load_n(type *ptr, int memorder)
+void __atomic_load(type *ptr, type *ret, int memorder)
+void __atomic_store_n(type *ptr, type *val, int memorder)
+...
+```
+`__atomic_test_and_set` & `__atomic_clear`
+
+
+`__atomic_thread_fence`
+`__atomic_signal_fence`
+
+- - -
+
+`__atomic_always_lock_free`
+`__atomic_is_lock_free`
+
+
+### Memory Order
+
+#### Compiler base atomic operations
+
+Memory barriers are not always used for atomic operations.
+
+The C++ atomics API
+```cpp
+__ATOMIC_RELAXED
+__ATOMIC_CONSUME // 
+__ATOMIC_ACQUIRE
+__ATOMIC_RELEASE
+__ATOMIC_AQC_REL
+__ATOMIC_SEQ_CST // SEQUENTIALY CONSISTENT
+```
+
+Example of usage of the C++ atomic:
+
+```cpp
+/* The result of this program is 6 , w/o using mutex or other
+sync mechanisms */
+#include <iostream>
+#include <thread>
+#include <atomic>
+
+std::atomic<long long> count;
+void worker(){
+    cout.fetch_add(1, std::memory_order_relaxed);
+}
+
+int main(){
+    std::thread t1(worker);
+    std::thread t2(worker);
+    std::thread t3(worker);
+    std::thread t4(worker);
+    std::thread t5(worker);
+    std::thread t6(worker);
+
+    t1.join();
+    t2.join();
+    t3.join();
+    t4.join();
+    t5.join();
+    t6.join();
+    std::count << "Count value:" << count << '\n'; 
+}
+```
+
+
+Memory order determins how non atomic memory access have to be ordered around 
+atomic operations. 
+
