@@ -49,7 +49,7 @@ public:
 
 private:
     static constexpr ::std::size_t align(::std::size_t const n) noexcept {
-        return (n + (alignment - 1)) & -alignment;
+        return (n + (alignment - 1)) & ~(alignment-1);
     }
 
     bool pointer_in_buffer(char* const p) noexcept{
