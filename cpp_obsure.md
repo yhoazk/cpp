@@ -3,11 +3,12 @@ This page is a collection of obscure C++ features, gathered over the years as I'
 
 ## What square brackets really mean
 
-Accessing an element of an array via ptr[3] is actually just short for *(ptr + 3). This can be equivalently written as *(3 + ptr) and therefore as 3[ptr], which turns out to be completely valid code.
+Accessing an element of an array via `ptr[3]` is actually just short for `*(ptr + 3)`. This can be equivalently written as `*(3 + ptr)` and therefore as `3[ptr]`, which turns out to be completely valid code.
 
 ## Most vexing parse
 
 The "most vexing parse" is a term coined by Scott Meyers for an ambiguity in C++ declaration syntax that leads to counterintuitive behavior:
+
 ```cpp
 // Is this:
 // 1) A variable of type std::string initialized to a std::string()?
@@ -21,21 +22,30 @@ std::string foo(std::string());
 //    which is an int named x?
 int bar(int(x));
 ```
+
 The C++ standard requires the second interpretation in both cases, even though the first interpretation is the intuitive one. Programmers can disambiguate by enclosing the initial value of the variable in parentheses:
+
 ```cpp
 // Parentheses resolve the ambiguity
 std::string foo((std::string()));
 int bar((int(x)));
 ```
+
 The reason for the ambiguity in the second case is that int y = 3; is equivalent to int(y) = 3;.
+This somewhat clarified with the inclusion of the `{}` Initializer.
+
 
 ## Alternate operator tokens
 
-The tokens and, and_eq, bitand, bitor, compl, not, not_eq, or, or_eq, xor, xor_eq, <%, %>, <:, and :> can be used instead of the symbols &&, &=, &, |, ~, !, !=, ||, |=, ^, ^=, {, }, [, and ]. They let you type operators on keyboards that lack the necessary symbols.
+The tokens `and`, `and_eq`, `bitand`, `bitor`, `compl`, `not`, `not_eq`, `or`, `or_eq`,
+ `xor`, `xor_eq`, `<%`, `%>`, `<:`, and `:>` can be used instead of the symbols
+ `&&`, `&=`, `&`, `|`, `~`, `!`, `!=`, `||`, `|=`, `^`, `^=`, `{`, `}`, `[`, and `]`.
+They let you type operators on keyboards that lack the necessary symbols.
 
 ## Redefining keywords
 
-Redefining keywords via the preprocessor is technically supposed to cause an error but tools allow it in practice. This lets you do fun bug-introducing stuff like #define true false or #define else. However, there are times it is legitimately useful. For example, if you're using a large library and you need to bypass the C++ access protection mechanism, instead of patching the library you can just turn off access protection before including the headers for the library. Remember to turn the protection back on afterwards!
+Redefining keywords via the preprocessor is technically supposed to cause an error but tools allow it in practice. This lets you do fun bug-introducing stuff like `#define true false` or `#define else`. However, there are times it is legitimately useful.
+For example, if you're using a large library and you need to bypass the C++ access protection mechanism, instead of patching the library you can just turn off access protection before including the headers for the library. Remember to turn the protection back on afterwards!
 ```cpp
 #define class struct
 #define private public
@@ -78,6 +88,7 @@ int main() {
   return 0;
 }
 ```
+
 Placement new is used when writing custom allocators for performance-critical scenarios. For example, a slab allocator starts with a single large chunk of memory and uses placement new to allocate objects sequentially within the chunk. This avoids memory fragmentation and the overhead of heap traversal that malloc incurs.
 
 ## Branch on variable declaration

@@ -29,3 +29,12 @@ INFO: Elapsed time: 2.376s, Critical Path: 0.06s
 #### Error: `ccache: error: Failed to create temporary file`
 
 Use the option `--strategy=CppCompile=standalone` in the bazel build cmd call.
+
+### Debugging
+
+1. Generate executables with debug information
+```
+bazel build ... --compilation_mode=dbg -s
+```
+( the mode is `dbg` not `gdb`)
+2. Run `gdbtui` calling the binary in `bazl-bin/bin/main`
