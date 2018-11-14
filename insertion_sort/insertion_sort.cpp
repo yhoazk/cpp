@@ -6,8 +6,8 @@
 
 using namespace std;
 
-std::vector<size_t> test_data = { 0,32,4,2,3,6,8,5,90,9, 1};
-std::array<float,11> test_float = { 0.22,3.2,3.44,2.3334,0.03,56.6,800.8,5.0,9.1000,9000, 1.145};
+std::vector<size_t> test_data = { 1,32,4,2,3,6,8,5,90,9, 1, 0};
+std::array<float,12> test_float = { 0.22,3.2,3.44,2.3334,0.03,56.6,800.8,5.0,9.1000,9000, 1.145, 0.001};
 // naive insertion sort
 auto pv = [&](auto data){
     for(auto& n : data){
@@ -21,19 +21,17 @@ void ins_sort(T& v){
     for(auto i = std::begin(v); i != std::end(v)-1; ++i){
         // First element is the trivial sorted list
         auto j = i+1; 
-        while(j != std::begin(v)+1){
+        while(j != std::begin(v)){
             pv(v);
-            if(*j < *(j-1)){
+            if(*j > *(j-1)){
                 std::iter_swap(j-1,j);
-            }else{
-                break;
+            } else {
+                break; // Count the number of operations saved with this
             }
             --j;
         }
-        if(*j < *(j-1)){
-            std::swap(i,j);
-        }
     }
+    pv(v);
 }
 
 //http://sortbenchmark.org/
