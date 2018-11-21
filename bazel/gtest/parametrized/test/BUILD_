@@ -1,0 +1,10 @@
+
+cc_test(
+    name = "fizzbuzz_test",
+    srcs = [
+        "fizzbuzz_test.cpp",
+    ],
+   deps = [
+        "@gtest//:gtest_main",
+    ]
+)
