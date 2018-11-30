@@ -5,5 +5,5 @@ cc_test(
         "fizzbuzz.cpp",
         "fizzbuzz.h"
     ],
-    deps = ["@gtest//:main"]
+    deps = ["@googletest//:gtest_main"]
 )
