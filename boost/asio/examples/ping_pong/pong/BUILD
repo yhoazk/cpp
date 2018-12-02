@@ -2,6 +2,6 @@
 cc_binary(
   name = "pong",
   srcs = ["pong.cpp"],
-  copts = [],
-  deps = ["@boost_asio"],
+  copts = ["-std=c++14"],
+  #deps = ["@boost_asio"],
 )
