@@ -1,4 +1,5 @@
-Calcule el centroide geométrico de la mesh de Suzanne. El archivo anexo en la actividad “Monkey.vertex” contiene la siguiente información binaria así:
+Calcule el centroide geométrico de la mesh de Suzanne. 
+El archivo anexo en la actividad `Monkey.vertex` contiene la siguiente información binaria así:
 
 - 1 unsigned long (4byte) con el número de vértices almacenados en la secuencia.
 - N vectores (16byte) con las coordenada del vértice como un arreglo float[4]. (x,y,z,w), w=1.0f siempre.

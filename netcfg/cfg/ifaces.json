@@ -1,0 +1,30 @@
+for(;;);"comm" :{
+    "eth" :[
+        "eth0":{
+            "ip" : "192.168.0.1",
+            "netmask" : "255.255.255.128",
+            "gateway":"0.0.0.0",
+            "broadcast": "192.168.0.255",
+            "multicast":"245.245.245.200",
+            "mtu" : 1500,
+            "promisc" : false,
+            "multicast" : true
+            "vlan":{
+                "id1": 73
+            }
+        },
+        "eth1":{
+            "ip" : "166.100.45.101",
+            "netmask" : "255.255.255.128",
+            "gateway":"0.0.0.0",
+            "broadcast": "166.100.45.255",
+            "multicast":"245.245.245.200",
+            "mtu" : 1500,
+            "promisc" : false,
+            "multicast" : true
+            "vlan":{
+                "id1": 73
+            }
+        }, 
+    ]
+}

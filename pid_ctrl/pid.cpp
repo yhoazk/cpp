@@ -8,7 +8,7 @@ double calculateAcceleration(double current, double target)
   static double differen_term = 0;
   static double last_err = 0;
 
-  static double P=0.015,I=0.000003,D=0.00019;
+  static double P=0.015,I=0.000003,D=0.00019; // TODO: Make a class of controller and add a auto-tunning method.
 
   double increment;
   double err = target - current;

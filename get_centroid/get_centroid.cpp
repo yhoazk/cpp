@@ -39,15 +39,16 @@ int main (void)
     if(!(monkey.is_open()))
     {
         std::cout << "Error: Unable to open the Monkey file" << std::endl;
+        exit(1);
     }
     
-    unsigned long vertex_count = 0;
-    monkey.read((char*)&vertex_count, sizeof(unsigned long));
+    uint32_t vertex_count = 0;
+    monkey.read((char*)&vertex_count, sizeof(unsigned int32_t));
     vertex* pVertex = new vertex[vertex_count];
 
     monkey.read((char*)pVertex, vertex_count * sizeof(vertex));
     // http://en.cppreference.com/w/cpp/io/manip <- print in hex reference
-    std::cout << "Vertex read: " << std::hex << "0x" << vertex_count << std::endl;
+    std::cout << "Vertex Count read: " << std::hex << "0x" << vertex_count << std::endl;
     vertex centroid = get_centroid(pVertex, vertex_count);
     std::cout << "Monkey centroid: " << centroid.x << ", " << centroid.y << ", " << centroid.z << ", " << centroid.w << std::endl;
 

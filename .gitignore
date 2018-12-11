@@ -6,3 +6,8 @@
 *.swp
 
 pts.csv
+.vscode/
+
+bazel-*
+obj_pose*.txt
+.cache

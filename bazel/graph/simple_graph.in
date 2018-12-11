@@ -1,0 +1,18 @@
+digraph mygraph {
+  node [shape=box];
+"//:main_app"
+"//:main_app" -> "//:input_parser"
+"//:main_app" -> "//:logger"
+"//:main_app" -> "//:op_gen"
+"//:main_app" -> "//:app/main_app.cpp"
+"//:app/main_app.cpp"
+"//:op_gen"
+"//:op_gen" -> "//:op_gen/op_gen.cpp\n//:op_gen/op_gen.h"
+"//:logger"
+"//:logger" -> "//:logger/logger.cpp\n//:logger/logger.h"
+"//:logger/logger.cpp\n//:logger/logger.h"
+"//:input_parser"
+"//:input_parser" -> "//:input_parser/input_parser.h\n//:input_parser/input_parser.cpp"
+"//:input_parser/input_parser.h\n//:input_parser/input_parser.cpp"
+"//:op_gen/op_gen.cpp\n//:op_gen/op_gen.h"
+}
