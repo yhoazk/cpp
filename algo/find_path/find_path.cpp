@@ -163,7 +163,7 @@ void print_grid(std::vector<std::vector<node>>& v)
     std::cout  << '\n';
   }
   std::cout  << '\n';
-  std::this_thread::sleep_for(std::chrono::milliseconds(300));
+  std::this_thread::sleep_for(std::chrono::milliseconds(200));
   std::cout << "\033[2J\033[1;1H";
 
 
@@ -186,29 +186,25 @@ void set_val(std::vector<std::vector<node>>& v, size_t x, size_t y, char c){
 
   }
 }
+
+
+
 node* check_parent(node* n, vector<char>& sol){
   char decoder[] = {'/','|','\\'};
-  static const vector<size_t> prio = {1,2,0}; // first keep lane, second left, tird right
-  //vector<node*> result = {nullptr, nullptr, nullptr};
+  static array<size_t, 3> prio = {1,2,0}; // first keep lane, second left, tird right
+
+//  std::reverse(prio.begin(), prio.end());
   node* result;// = {nullptr, nullptr, nullptr};
-  int refs = 0; //number of encountered references
 
   for(auto k: prio){
     if(nullptr != n->parent_expand[k]){
-        cout << decoder[k];
         sol.push_back(decoder[k]);
         result = n->parent_expand[k];
         result->val = decoder[k];
-        ++refs;
         break;
     }
   }
 
-  if(refs > 1){
-    cout << "TWO or more references found" << endl << endl;
-  }  else  {
-    /* nop */
-  }
   print_grid(node_map);
   return result;
 }
@@ -217,6 +213,7 @@ node* check_parent(node* n, vector<char>& sol){
 /* A function will be created to parse the tree and return the path even is there's no
   option but to remain in the same state */
 
+//std::pair<int, int> find
 /**
  * This function can be break in 2 parts, one to find if a path to the goal
  * exists, other to back track the path from the givent tree.
@@ -235,7 +232,7 @@ std::vector<char> find_path(node* root)
   static vector<char> path;
   std::vector<int> possible_movs;
 
-  while (node_queue.empty() != true && found == false){
+  while (node_queue.empty() == false /*&& found == false*/){
     next_node = nullptr;
     possible_movs = {center_lane, leftmost_lane,  rigthmost_lane};
     current_node = node_queue.front();
@@ -243,15 +240,11 @@ std::vector<char> find_path(node* root)
     if(true == current_node->expanded){
       continue;
     }
-    cout << "______________________________________ Queue size: " << node_queue.size() << endl;
-    std::cout << "current_node x: " << current_node->x << "  y: " << current_node->y << " val: " << current_node->val << '\n';
-//    for(int i = 0; i < current_node->x; ++i)
-//        cout <<  "   ";
     /* check possible paths in which the node can move */
 
 // the node being appended so it can be registered??
 
-    /**/
+    /* Remove invalid options */
     if(rigthmost_lane == current_node->x){
       possible_movs.erase( possible_movs.begin() + 2);
     } else if(leftmost_lane == current_node->x){
@@ -278,44 +271,36 @@ std::vector<char> find_path(node* root)
       next_node->x = (current_node->x)+inc_x;
       next_node->y = (current_node->y)+1;
 
-      if(next_node->y > 13)
-      {
-        cout << "ENDD"<< endl;
-      }
       /* Fill the child info */
-      if('#' == next_node->val)
-      {
-        std::cout << "next_node x: " << next_node->x << "  y: " << next_node->y << '\n';
-        cout << decode_show[lane];
-        current_node->set_child(lane_id(lane), next_node);
-        node_queue.push(next_node);
-        next_node->set_parent(lane_id(lane), current_node);
-      } else if('G' == next_node->val){
-        cout << decode_show[lane];
-        current_node->set_child(lane_id(lane), next_node);
-        next_node->set_parent(lane_id(lane), current_node);
-        cout << "\nFOUND";
-        goal_node = next_node;
-        cout << " Coordx: " << goal_node->x << " Coordy: " << goal_node->y   << endl;
-        found = true;
-        /* Now that we now exists a path to the goal, find the best one           */
-        /* Check which of the possible parent have a refernce to me (the child node) */
-        /* If that reference exists, then is part of the path, not otherwise         */
-        while(goal_node != root){
-            goal_node = check_parent(goal_node, path);
+      if('#' == next_node->val){
+        if(!found){
+          node_queue.push(next_node);
         }
+        current_node->set_child(lane_id(lane), next_node);
+        next_node->set_parent(lane_id(lane), current_node);
+        print_grid(node_map);
+      } else if('G' == next_node->val){
+        next_node->set_parent(lane_id(lane), current_node);
+        goal_node = next_node;
+        found = true;
       }
     }
     current_node->expanded = true;
-    std::cout << endl;
+    set_val(node_map,current_node->x,current_node->y,'*');
   }
 
-  if(!found){
+  /* Now we now that exists a path to the goal, find the best one           */
+  /* Check which of the possible parent have a refernce to me (the child node) */
+  /* If that reference exists, then is part of the path, not otherwise         */
+  if(found){
+    while(goal_node != root){
+      goal_node = check_parent(goal_node, path);
+    }
+    return path;
+  } else {
     /* There's no possible path to the to the goal*/
     cout << "NO PATH!!!!!!!!!!1" << endl;
     return {};
-  } else {
-    return path;
   }
 
 }
@@ -351,8 +336,8 @@ int main(int argc, char const *argv[]) {
   {
     r.resize(GRID_W);
   }
-  set_val(node_map,0,6,'.');
-  set_val(node_map,1,8,'.');
+  set_val(node_map,1,6,'.');
+  set_val(node_map,0,9,'.');
   set_val(node_map,2,6,'.');
                 // x y
   set_val(node_map,1,2,'O'); // setting the root node
@@ -363,8 +348,8 @@ int main(int argc, char const *argv[]) {
   sol = find_path(&node_map[2][1]);
 
   /*------------*/
-  std::cout << "map:" << node_map.size() << "x" << node_map[0].size() << '\n';
-  print_resuls(sol);
+ // std::cout << "map:" << node_map.size() << "x" << node_map[0].size() << '\n';
+ // print_resuls(sol);
   /*setting Original position*/
   return 0;
 }
