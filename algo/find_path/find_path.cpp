@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <string>
 #include <gtest/gtest.h>
+#include <chrono>
+#include <thread>
 
 /**
 This program find the path of the '0' in order to keep moving forward
@@ -105,16 +107,7 @@ using namespace std;
 
 bool found = false;
 bool finished = false;
-class node{
-public:
-  // bool visited; not needed as it a tree
-  // node* last; this will be implemented in the parent
-  vector<node*> child_expand;
-  vector<node*> parent_expand;
-  int x;
-  int y;
-  char val;
-  bool expanded;
+struct node{
   node(): child_expand{nullptr,nullptr,nullptr}, parent_expand{nullptr,nullptr,nullptr}, x(0),y(0), val('#'), expanded(false)
   {
     /* Empty */
@@ -139,6 +132,13 @@ public:
   {
     child_expand[lane] = n;
   }
+  // node* last; this will be implemented in the parent
+  array<node*, 3> child_expand; // stores the next nodes l, c and r which would be visited
+  array<node*, 3> parent_expand; // stores the parent nodes, to go back
+  int x;
+  int y;
+  char val;
+  bool expanded;
 };
 
 /* Crete the array of nodes */
@@ -163,6 +163,9 @@ void print_grid(std::vector<std::vector<node>>& v)
     std::cout  << '\n';
   }
   std::cout  << '\n';
+  std::this_thread::sleep_for(std::chrono::milliseconds(300));
+  std::cout << "\033[2J\033[1;1H";
+
 
 }
 
@@ -214,6 +217,11 @@ node* check_parent(node* n, vector<char>& sol){
 /* A function will be created to parse the tree and return the path even is there's no
   option but to remain in the same state */
 
+/**
+ * This function can be break in 2 parts, one to find if a path to the goal
+ * exists, other to back track the path from the givent tree.
+ * */
+
 std::vector<char> find_path(node* root)
 {
   found = false;
@@ -232,13 +240,13 @@ std::vector<char> find_path(node* root)
     possible_movs = {center_lane, leftmost_lane,  rigthmost_lane};
     current_node = node_queue.front();
     node_queue.pop();
-    if(current_node->expanded == true){
+    if(true == current_node->expanded){
       continue;
     }
     cout << "______________________________________ Queue size: " << node_queue.size() << endl;
     std::cout << "current_node x: " << current_node->x << "  y: " << current_node->y << " val: " << current_node->val << '\n';
-    for(int i = 0; i < current_node->x; ++i)
-        cout <<  "   ";
+//    for(int i = 0; i < current_node->x; ++i)
+//        cout <<  "   ";
     /* check possible paths in which the node can move */
 
 // the node being appended so it can be registered??
@@ -277,8 +285,8 @@ std::vector<char> find_path(node* root)
       /* Fill the child info */
       if('#' == next_node->val)
       {
-       // std::cout << "next_node x: " << next_node->x << "  y: " << next_node->y << '\n';
-        // cout << decode_show[lane];
+        std::cout << "next_node x: " << next_node->x << "  y: " << next_node->y << '\n';
+        cout << decode_show[lane];
         current_node->set_child(lane_id(lane), next_node);
         node_queue.push(next_node);
         next_node->set_parent(lane_id(lane), current_node);
@@ -331,11 +339,10 @@ void print_resuls(vector<char>& s){
   }
 }
 
-TEST(find_path, test_one){
-  EXPECT_EQ(true, true);
-}
+// TEST(find_path, test_one){
+  // EXPECT_EQ(true, true);
+// }
 
-#if 0
 int main(int argc, char const *argv[]) {
   /* Init grid */
   std::cout << "Original Map address: " << &node_map << '\n';
@@ -361,4 +368,3 @@ int main(int argc, char const *argv[]) {
   /*setting Original position*/
   return 0;
 }
-#endif
