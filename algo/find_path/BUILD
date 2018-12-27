@@ -6,6 +6,8 @@ cc_library(
     #deps = ["header filesfin"],
 )
 
+## Enable debug mode --compilation_mode=dbg -s
+
 # https://docs.bazel.build/versions/master/be/c-cpp.html#cc_binary
 cc_binary(
     name = "find_path",

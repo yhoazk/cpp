@@ -95,13 +95,13 @@ try a straight paths unless an obstacle is found.
 
 **/
 
-#define GRID_W (3)
-#define GRID_H (15)
+constexpr size_t GRID_W(5);
+constexpr size_t GRID_H(15);
 
 enum lane_id{
   rigthmost_lane = 0,
-  center_lane,
-  leftmost_lane
+  center_lane = GRID_W/2,
+  leftmost_lane = GRID_W
 };
 using namespace std;
 
@@ -110,7 +110,7 @@ bool finished = false;
 struct node{
   node(): child_expand{nullptr,nullptr,nullptr}, parent_expand{nullptr,nullptr,nullptr}, x(0),y(0), val('#'), expanded(false)
   {
-    /* Empty */
+    std::cout << 'x';
   }
 
   node* get_parent(enum lane_id lane)
@@ -142,44 +142,33 @@ struct node{
 };
 
 /* Crete the array of nodes */
-std::vector<std::vector<node>> node_map;
+std::array<std::array<node, GRID_W>, GRID_H> node_map;
 /* This is done by expanding the nodes, this means to watch at every position
    if what movements are possible, and penalizing the movements and discarting
    the impossible movemets
 */
-
-void print_grid(std::vector<std::vector<node>>& v)
-{
+template<size_t W, size_t H>
+void print_grid(std::array<std::array<node, W>, H>& v){
   std::cout << "   0 1 2" << '\n';
-
-  for (size_t i = 0; i < v.size(); i++)
-  {
+  static bool tog = false;
+  for (size_t i = 0; i < v.size(); i++){
     std::cout.width(2);
     std::cout <<  i << '|' << ' ';
-    for (size_t j = 0; j < v[0].size(); j++)
-    {
+    for (size_t j = 0; j < v[0].size(); j++){
       std::cout << v[i][j].val << ' ';
     }
     std::cout  << '\n';
   }
-  std::cout  << '\n';
+  std::cout  << (tog? '-':'|') << '\n';
+  tog = !tog;
   std::this_thread::sleep_for(std::chrono::milliseconds(200));
   std::cout << "\033[2J\033[1;1H";
-
-
 }
 
-void fill_grid(std::vector<std::vector<node>>& v){
-  std::cout << "Fill map address: " << &v << '\n';
-  for(auto& r : v){
-    for(auto& e : r){
-      e.val = '#';
-    }
-  }
-}
 
-void set_val(std::vector<std::vector<node>>& v, size_t x, size_t y, char c){
-  if(x < GRID_W && y < GRID_H){
+template<size_t W, size_t H>
+void set_val(std::array<std::array<node, W>, H>& v, size_t x, size_t y, char c){
+  if(x < W && y < H){
     v[y][x].val = c;
     v[y][x].x = x;
     v[y][x].y = y;
@@ -190,10 +179,9 @@ void set_val(std::vector<std::vector<node>>& v, size_t x, size_t y, char c){
 
 
 node* check_parent(node* n, vector<char>& sol){
-  char decoder[] = {'/','|','\\'};
+  static char decoder[] = {'/','|','\\'};
   static array<size_t, 3> prio = {1,2,0}; // first keep lane, second left, tird right
 
-//  std::reverse(prio.begin(), prio.end());
   node* result;// = {nullptr, nullptr, nullptr};
 
   for(auto k: prio){
@@ -231,18 +219,21 @@ std::vector<char> find_path(node* root)
   int inc_x;
   static vector<char> path;
   std::vector<int> possible_movs;
-
-  while (node_queue.empty() == false /*&& found == false*/){
+  /* Keep pushing nodes in the queue while is possible and found is false
+     all nodes have to be expanded to get the best route.
+  */
+  while (node_queue.empty() == false){
     next_node = nullptr;
     possible_movs = {center_lane, leftmost_lane,  rigthmost_lane};
     current_node = node_queue.front();
     node_queue.pop();
     if(true == current_node->expanded){
+      /* Node already visited, continue */
       continue;
     }
     /* check possible paths in which the node can move */
 
-// the node being appended so it can be registered??
+    // the node being appended so it can be registered??
 
     /* Remove invalid options */
     if(rigthmost_lane == current_node->x){
@@ -253,7 +244,6 @@ std::vector<char> find_path(node* root)
 
     /*By reversing the elements the move to the left comes first in prio*/
     //reverse(possible_movs.begin(), possible_movs.end());
-    char decode_show[] = {'/','|','\\'};
     for(auto lane: possible_movs){
       switch (lane){
         case rigthmost_lane:
@@ -331,11 +321,7 @@ void print_resuls(vector<char>& s){
 int main(int argc, char const *argv[]) {
   /* Init grid */
   std::cout << "Original Map address: " << &node_map << '\n';
-  node_map.resize(GRID_H);
-  for(auto& r : node_map) /* This needs to be a reference, otherwise will generate a copy */
-  {
-    r.resize(GRID_W);
-  }
+
   set_val(node_map,1,6,'.');
   set_val(node_map,0,9,'.');
   set_val(node_map,2,6,'.');
@@ -347,9 +333,6 @@ int main(int argc, char const *argv[]) {
   print_grid(node_map);   //y  x
   sol = find_path(&node_map[2][1]);
 
-  /*------------*/
- // std::cout << "map:" << node_map.size() << "x" << node_map[0].size() << '\n';
  // print_resuls(sol);
-  /*setting Original position*/
   return 0;
 }
