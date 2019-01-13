@@ -22,3 +22,8 @@ There's only one `io_service` object, but several IO objects as they are task
 oriented. If we want to send TCP use `boost::asio::ip::tcp::socket` if serial
 is to be used `boost::asio::serial_port` if a timer is needed use
 `boost::asio::steady_timer` this call uses the OS to notify the process.
+
+## Scalability and multithread
+
+Scalability describes the hability of a programm to effectively benefit from
+aditional resources. 

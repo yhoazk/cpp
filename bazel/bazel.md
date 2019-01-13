@@ -12,7 +12,6 @@ The commands to run the compilation are: `bazel build //<src-folder>:<bin_name>`
 
 The file `WORKSPACE` can be empty or contain references to external deps.
 
-
 ## BUILD
 
 The file `BUILD` defines the primary unit of code called a _package_. By definition
@@ -28,7 +27,9 @@ Packages can be groupes to limit its visibility by using the function
 attribute.
 
 ### Rules
+
 [src](https://docs.bazel.build/versions/master/skylark/rules.html#actions)
+
 #### Macros and rules
 
 Macros instantiate rules in the loading phase. Macros are useful to repetitive
@@ -80,6 +81,7 @@ INFO: Elapsed time: 2.376s, Critical Path: 0.06s
 
 Use the option `--strategy=CppCompile=standalone` in the bazel build cmd call.
 This error can be fixed by exporting the `CC` and `CXX` environment variables.
+
 ```bash
 export CC="/usr/bin/gcc"
 export CXX="/usr/bin/g++"
@@ -95,5 +97,3 @@ bazel build ... --compilation_mode=dbg -s
 
 ( the mode is `dbg` not `gdb`)
 2. Run `gdbtui` calling the binary in `bazl-bin/bin/main`
-
-
