@@ -17,3 +17,5 @@ fullfil their purpose. However they are not designed to defeat a determined
 adversary.
 
 ## Hash vs Checksum
+
+Some checksums provide error detection/correcting properties.

@@ -3,7 +3,6 @@
 using namespace std;
 
 
-int main(void)
-{
+int main(void){
   cout << "works" << endl;
 }

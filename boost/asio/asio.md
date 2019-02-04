@@ -4,7 +4,7 @@ Asynchornous IO makes possible to make calls and return inmediatelly witout
 result from the call. The result will be processed in the future.
 In the mean time our process can continue with its work.
 
-The difference with boost.threads and asio is that threads is for accessing 
+The difference with boost.threads and asio is that threads is for accessing
 internal resources. Asio is for external resources that most likely go through
 a network card.
 
@@ -26,4 +26,4 @@ is to be used `boost::asio::serial_port` if a timer is needed use
 ## Scalability and multithread
 
 Scalability describes the hability of a programm to effectively benefit from
-aditional resources. 
+aditional resources.
