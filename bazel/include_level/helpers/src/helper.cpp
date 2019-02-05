@@ -1,17 +1,16 @@
-#include "first/helpers.h"
-#include "second/helpers_2.h"
+#include "helper.h"
 
-bool print_help(int times){
+bool helper::print_help(int times){
   for(size_t k=times; k>0; --k){
-    std::cout << helpers_id << '\n'; 
+    std::cout << first::helpers_id << '\n';
   }
   return true;
 }
 
-bool print_help2(int times){
+bool helper::print_help2(int times){
   times *= 2;
   for(size_t k=times; k>0; --k){
-    std::cout << helpers_id2 << '\n'; 
+    std::cout << second::helpers_id2 << '\n';
   }
   return true;
 }
