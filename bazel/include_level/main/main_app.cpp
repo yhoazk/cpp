@@ -6,6 +6,6 @@
 int main(int argc, char const *argv[])
 {
   std::cout << "Main\n";
-  helper::print_help( 6 );
+  helper::print_help2( 6 );
   return 0;
 }
