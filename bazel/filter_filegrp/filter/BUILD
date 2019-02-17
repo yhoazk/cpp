@@ -7,6 +7,14 @@ https://docs.bazel.build/versions/master/skylark/backward-compatibility.html
 
 filtered_genrule(
     name = "mylib",
-    src  = ["cfg/lib.json"]
-    outs = ["gen_lib/adder.h, gen_src/adder.cpp, gen_cfg/adder.json"]
+    cfg  = ["cfg/lib.json"],
+    outs = ["gen_lib/adder.h", "gen_src/adder.cpp", "gen_cfg/adder.json"]
+)
+
+# https://docs.bazel.build/versions/master/be/c-cpp.html#cc_binary
+cc_binary(
+    name = "main",
+    srcs = ["src/main.cpp"],
+   # copts = [],
+    deps = [":mylib"],
 )

@@ -3,12 +3,12 @@ import json
 import sys
 import os
 
-hdr_tmplt = "constexpt instance_id = {}"
-src_tmplt = '''include "gen_lib/adder.h"\
-            int {}(int a, int b){\
-                return a+b;
-            }'''
-cfg_tmplt = '{ "instance_id": {} }'
+hdr_tmplt = "constexpt std::str instance_id = {};"
+src_tmplt = (f'#include "gen_lib/{1}.h"\n'
+            f'int {1}(int a, int b)\n'
+            f'    return a+b;\n'
+            f'\n')
+cfg_tmplt = f' "instance_id": {1} '
 
 
 
@@ -27,9 +27,9 @@ def generate(cfg):
     app_name = cfg["app"]
     key  = cfg["key"]
     iid = cfg["instance_id"]
-    src = open("gen_src/{}.cpp".format(app_name), "wb")
-    hrd = open("gen_lib/{}.h".format(app_name), "wb")
-    out_cfg = open("gen_src/{}.json".format(app_name), "wb")
+    src = open("gen_src/{}.cpp".format(app_name), "w")
+    hrd = open("gen_lib/{}.h".format(app_name), "w")
+    out_cfg = open("gen_cfg/{}.json".format(app_name), "w")
 
     src.write(src_tmplt.format(app_name))
     hrd.write(hdr_tmplt.format(key))

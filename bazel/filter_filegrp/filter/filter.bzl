@@ -23,7 +23,7 @@ def filtered_genrule(name, cfg, outs, **kwargs):
   Returns a file group for each extension type in the generated
   output.
   """
-'''   _do_filter(
+  '''   _do_filter(
     name = "%s_hdrs" % name,
     visibility = ["//visibility:private"],
     srcs = hdrs,
@@ -37,11 +37,13 @@ def filtered_genrule(name, cfg, outs, **kwargs):
     suffix = ".cpp",
   ) '''
   GEN_BIN="gen/code_generator.py"
-  
+
   native.genrule(
     name = name,
     srcs = cfg,
     outs = outs,
-    cmd = "python {} $(@)".format(GEN_BIN)
+    cmd = "python {} $(SRCS)".format(GEN_BIN),
     **kwargs
-  )
+    )
+
+  
