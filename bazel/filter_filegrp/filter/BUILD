@@ -11,10 +11,17 @@ filtered_genrule(
     outs = ["gen_lib/adder.h", "gen_src/adder.cpp", "gen_cfg/adder.json"]
 )
 
+# https://docs.bazel.build/versions/master/be/c-cpp.html#cc_library
+cc_library(
+    name = "libmain",
+    srcs = [],
+    hdrs = [],
+    deps = [":mylib"],)
+
 # https://docs.bazel.build/versions/master/be/c-cpp.html#cc_binary
 cc_binary(
     name = "main",
     srcs = ["src/main.cpp"],
    # copts = [],
-    deps = [":mylib"],
+    deps = [":libmain"],
 )
