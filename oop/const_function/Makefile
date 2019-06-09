@@ -1,4 +1,4 @@
-APP=const_functions
+APP=const_function
 
 all: clean comp run
 
