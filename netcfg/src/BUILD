@@ -1,4 +1,4 @@
 cc_binary(
     name = "netcfg",
-    srcs = ["netcfg.cpp"]
+    srcs = ["netcfg.cpp", "netcfg.hpp"],
 )

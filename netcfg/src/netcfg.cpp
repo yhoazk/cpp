@@ -3,7 +3,7 @@
 */
 #include "netcfg.hpp"
 
-
+#if 0
 bool get_ip(std::string iface_name){
     struct ifreq ifr;
     struct sockadd_in sock_in;
@@ -16,9 +16,9 @@ bool get_ip(std::string iface_name){
     int  socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
     if(socket_fd == -1){
         perror("Creting socket");
-    } 
+    }
     // set the name of the interface we want to get the ip
-    name_len = (name_len > iface_name.length())? iface_name.length() : name_len; 
+    name_len = (name_len > iface_name.length())? iface_name.length() : name_len;
     strncpy(ifr.iface_name, iface_name, name_len);
 
     if(ioctl(socket_fd, SIOCGIFADDR, &iface) < 0){
@@ -29,7 +29,43 @@ bool get_ip(std::string iface_name){
     printf("%s\n", inet_ntoa(sock_in->sin_addr));
     return true;
 }
+#endif
 
-int main(int argc, char*[] argv){
+std::vector<std::string> split(const std::string& s, char delimiter){
+    std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenstream(s);
+    while(std::getline(tokenstream, token, delimiter)){
+        //if(isspace(token)) continue;
+        tokens.push_back(token);
+    }
+    return tokens;
+}
+
+
+bool getArp(std::vector<uint8_t>& arp_table){
+    using namespace std;
+    char lines[128];
+    ifstream arp_node ("/proc/net/arp");
+    if(!arp_node.is_open()) return false;
+    std::string line;
+    while(arp_node.good()){
+        arp_node.getline(&lines[0], 127);
+        line.assign(lines, 127);
+        auto toks = split(line, ' ');
+        //std::remove_if(std::begin(toks), std::end(toks), [](){std::})
+        for(auto& e : toks){
+            std::cout << e << ':';
+        }
+    }
+
+    arp_node.close();
+
+    return true;
+}
+
+int main(){
+    std::vector<uint8_t> test;
+    getArp(test);
     return (0);
 }
