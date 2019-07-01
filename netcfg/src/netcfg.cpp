@@ -3,6 +3,9 @@
 */
 #include "netcfg.hpp"
 
+int skfd = -1;
+
+
 #if 0
 bool get_ip(std::string iface_name){
     struct ifreq ifr;
@@ -43,6 +46,34 @@ std::vector<std::string> split(const std::string& s, char delimiter){
 }
 
 
+int set_iface_flags(std::string ifname, uint16_t flags){
+    struct ifreq ifr;
+    int res = 0;
+
+    ifr.ifr_flags = flags;
+    strncpy(ifr.ifr_name, ifname.c_str(), IFNAMSIZ);
+    res = ioctl(skfd, SIOCSIFFLAGS, &ifr);
+    return res;
+}
+
+void setup(){
+  if( skfd = socket(AF_INET, SOCK_DGRAM, 0) < 0){
+      perror("socket");
+  }
+}
+
+bool ifdown(std::string& iname){
+    return true;
+}
+
+
+bool ifup(std::string& iname){
+    return true;
+}
+
+
+
+
 bool getArp(std::vector<uint8_t>& arp_table){
     using namespace std;
     char lines[128];
@@ -67,5 +98,7 @@ bool getArp(std::vector<uint8_t>& arp_table){
 int main(){
     std::vector<uint8_t> test;
     getArp(test);
+
+    setup();
     return (0);
 }

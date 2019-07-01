@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <cctype>
 #include <array>
-#include <linux/ioctl.h>
+#include <sys/ioctl.h>
 #include <net/if.h>
-
+#include <linux/netlink.h>
+#include <linux/sockios.h>
+#include <string.h>
