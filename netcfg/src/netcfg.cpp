@@ -71,7 +71,7 @@ bool ifup(std::string& iname){
     return true;
 }
 
-
+//grep -E "[a-z0-9]{2,}(?=\r|\n|$)" /proc/net/arp
 
 
 bool getArp(std::vector<uint8_t>& arp_table){
@@ -79,15 +79,29 @@ bool getArp(std::vector<uint8_t>& arp_table){
     char lines[128];
     ifstream arp_node ("/proc/net/arp");
     if(!arp_node.is_open()) return false;
-    std::string line;
+    std::string line, iface;
+    regex rgx_iface ( R"rgx([a-z0-9\._]{2,}(?=\r|\n|$))rgx");
+    // regex rgx_iface ( "[a-z0-9\\._]{2,}(?=\\r|\\n|$)",std::regex::extended );
+    smatch match_iface;
+    // scrap header
+    arp_node.getline(&lines[0], 127);
     while(arp_node.good()){
+        fill(begin(lines), end(lines), '\0');
         arp_node.getline(&lines[0], 127);
         line.assign(lines, 127);
+        cout << line;
+        auto it = line.find_last_of(' ');
+        iface.assign(line.substr(it+1));
+        if(regex_search(line, match_iface, rgx_iface)){
+            cout << match_iface[0] << '\n';
+        } else {
+            cout << " ::Iface not found::" << iface  << '\n';
+        }
         auto toks = split(line, ' ');
         //std::remove_if(std::begin(toks), std::end(toks), [](){std::})
-        for(auto& e : toks){
-            std::cout << e << ':';
-        }
+        // for(auto& e : toks){
+            // std::cout << e << ':';
+        // }
     }
 
     arp_node.close();
