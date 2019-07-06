@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <pthread.h>
-
+// Using Posix thread, C++11 introduces std::theads
+// these are now preferred over posix threads
 /* Only linux */
 
 #define NTHREADS 10
