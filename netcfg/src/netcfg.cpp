@@ -57,7 +57,7 @@ int set_iface_flags(std::string ifname, uint16_t flags){
 }
 
 void setup(){
-  if( skfd = socket(AF_INET, SOCK_DGRAM, 0) < 0){
+  if( (skfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0){
       perror("socket");
   }
 }
@@ -81,8 +81,13 @@ bool getArp(std::vector<uint8_t>& arp_table){
     if(!arp_node.is_open()) return false;
     std::string line, iface;
     regex rgx_iface ( R"rgx([a-z0-9\._]{2,}(?=\r|\n|$))rgx");
-    // regex rgx_iface ( "[a-z0-9\\._]{2,}(?=\\r|\\n|$)",std::regex::extended );
+    regex rgx_ip    ( R"rgx((\d{1,3}\.){3}\d{1,3}))rgx");
+    // regex rgx_ip    ( "([0-9]{1,3}\\.){3}[0-9]{1,3}");
+    regex rgx_mac   ( R"rgx([0-9A-F]{2}[:-]){5}([0-9A-F]{2})rgx");
+
     smatch match_iface;
+    smatch match_ip;
+    smatch match_mac;
     // scrap header
     arp_node.getline(&lines[0], 127);
     while(arp_node.good()){
@@ -92,8 +97,9 @@ bool getArp(std::vector<uint8_t>& arp_table){
         cout << line;
         auto it = line.find_last_of(' ');
         iface.assign(line.substr(it+1));
-        if(regex_search(line, match_iface, rgx_iface)){
-            cout << match_iface[0] << '\n';
+        cout << line << endl;
+        if(regex_search(line, match_ip, rgx_ip)){
+            cout << match_ip[0] << '\n';
         } else {
             cout << " ::Iface not found::" << iface  << '\n';
         }
