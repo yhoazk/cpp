@@ -81,9 +81,8 @@ bool getArp(std::vector<uint8_t>& arp_table){
     if(!arp_node.is_open()) return false;
     std::string line, iface;
     regex rgx_iface ( R"rgx([a-z0-9\._]{2,}(?=\r|\n|$))rgx");
-    regex rgx_ip    ( R"rgx((\d{1,3}\.){3}\d{1,3}))rgx");
-    // regex rgx_ip    ( "([0-9]{1,3}\\.){3}[0-9]{1,3}");
-    regex rgx_mac   ( R"rgx([0-9A-F]{2}[:-]){5}([0-9A-F]{2})rgx");
+    regex rgx_mac   ( R"rgx(([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2}))rgx");
+    regex rgx_ip    ( R"rgx(([0-9]{1,3}\.){3}[0-9]{1,3})rgx");
 
     smatch match_iface;
     smatch match_ip;
@@ -94,14 +93,14 @@ bool getArp(std::vector<uint8_t>& arp_table){
         fill(begin(lines), end(lines), '\0');
         arp_node.getline(&lines[0], 127);
         line.assign(lines, 127);
-        cout << line;
         auto it = line.find_last_of(' ');
         iface.assign(line.substr(it+1));
         cout << line << endl;
+        if(regex_search(line, match_mac, rgx_mac)){
+            cout << match_mac[0] << '\n';
+        }
         if(regex_search(line, match_ip, rgx_ip)){
             cout << match_ip[0] << '\n';
-        } else {
-            cout << " ::Iface not found::" << iface  << '\n';
         }
         auto toks = split(line, ' ');
         //std::remove_if(std::begin(toks), std::end(toks), [](){std::})
