@@ -65,8 +65,8 @@ public:
 - As function return: `return a;` inside a function such as `T f()`
 ### Copy Constructors
 
-A copy constructor is a member function which initializes an object using 
-another object of the same class. A copy ctor has the following function 
+A copy constructor is a member function which initializes an object using
+another object of the same class. A copy ctor has the following function
 prototype:
 
 ```cpp
@@ -94,3 +94,6 @@ handle, network connection, etc.
 Is important to notice that the **default copy ctor, makes a shallow copy**. This
 means that the memory is the same for src and dst objects.
 **Deep copy is possible only with user defined copy ctor**
+
+
+#### Initialization
