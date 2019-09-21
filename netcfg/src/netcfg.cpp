@@ -2,7 +2,7 @@
     \brief some header information to be filled
 */
 #include "netcfg.hpp"
-
+#include "gtest/gtest.h"
 int skfd = -1;
 
 
@@ -134,9 +134,12 @@ bool getArp(std::vector<uint8_t>& arp_result){
 }
 
 int main(){
+    /*
     std::vector<uint8_t> test;
     getArp(test);
 
     setup();
     return (0);
+    */
+
 }
