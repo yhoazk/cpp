@@ -2,7 +2,8 @@
     \brief some header information to be filled
 */
 #include "netcfg.hpp"
-#include "gtest/gtest.h"
+#include "backend/netlink_socket.h"
+
 int skfd = -1;
 
 
@@ -134,6 +135,13 @@ bool getArp(std::vector<uint8_t>& arp_result){
 }
 
 int main(){
+    {
+        using namespace netlink;
+        nl_socket nls;
+        nls.allocate();
+        nls._bind();
+        nls.show();
+    }
     /*
     std::vector<uint8_t> test;
     getArp(test);

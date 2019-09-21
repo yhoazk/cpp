@@ -1,12 +1,15 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
+#include "backend/netlink_socket.h"
+
 using ::testing::Return;
 using ::testing::_;
+using namespace netlink;
 
-class nl_sockMock : public netlink::nl_socket {
+class nl_sockMock : public Isocket {
 public:
-    MOCK_METHOD(bool, allocate, ());
+    MOCK_METHOD(bool, allocate, (override));
 }
 
 #include "backend/netlink_socket.h"
