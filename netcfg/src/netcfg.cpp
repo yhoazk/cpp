@@ -140,7 +140,8 @@ int main(){
         using namespace netlink;
         netlink::nl_socket sockt;  // the connection to send the request
         netlink::request req;    // contents of the request
-        
+        std::vector<std::uint8_t> buffer;
+        buffer.reserve(512);
         /* Create a getneigh request */
         req.create(rtnlmsg_class::neigh, rtnl_op::get_op);
 
@@ -148,15 +149,16 @@ int main(){
         netlink::rtnl_msg rtmsg(sockt.get_name(), &req);
         sockt.allocate();
         sockt._bind();
-        
+        sockt.request(rtmsg);
+        sockt.receive(buffer);
         sockt.show();
     }
-    /*
-    std::vector<uint8_t> test;
-    getArp(test);
+    
+    // std::vector<uint8_t> test;
+    // getArp(test);
 
-    setup();
+    // setup();
     return (0);
-    */
+
 
 }

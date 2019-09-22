@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <cstring>
 #include <iostream>
+#include <vector>
 
 namespace netlink {
 
@@ -46,6 +47,10 @@ namespace netlink {
             io.iov_len = req->rq.hdr.nlmsg_len;
         }
 
+        void set_msgcontent(std::vector<std::uint8_t>& data_buf){
+            io.iov_base = data_buf.data();
+            io.iov_len  = data_buf.capacity();
+        }
         /* Check if the life of hdr and io is safe or memcpy them */
         struct msghdr* data(){
             return &hdr;
@@ -89,7 +94,7 @@ namespace netlink {
         // there is only one type of data for the request?
             // what types of requests should we support?
         size_t request(rtnl_msg&);
-        bool receive();
+        ssize_t receive(std::vector<std::uint8_t>&);
     };
 
 } /* namespace netlink */
