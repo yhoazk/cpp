@@ -3,6 +3,7 @@
 */
 #include "netcfg.hpp"
 #include "backend/netlink_socket.h"
+#include "backend/request/nl_request.h"
 
 int skfd = -1;
 
@@ -137,10 +138,18 @@ bool getArp(std::vector<uint8_t>& arp_result){
 int main(){
     {
         using namespace netlink;
-        nl_socket nls;
-        nls.allocate();
-        nls._bind();
-        nls.show();
+        netlink::nl_socket sockt;  // the connection to send the request
+        netlink::request req;    // contents of the request
+        
+        /* Create a getneigh request */
+        req.create(rtnlmsg_class::neigh, rtnl_op::get_op);
+
+        // rtnl_msg rtmsg(sockt. req); // wrapper of the request
+        netlink::rtnl_msg rtmsg(sockt.get_name(), &req);
+        sockt.allocate();
+        sockt._bind();
+        
+        sockt.show();
     }
     /*
     std::vector<uint8_t> test;
