@@ -44,7 +44,7 @@ namespace netlink {
         
         void set_msgcontent( request* req){
             io.iov_base = req;
-            io.iov_len = req->rq.hdr.nlmsg_len;
+            io.iov_len = req->hdr->nlmsg_len;
         }
 
         void set_msgcontent(std::vector<std::uint8_t>& data_buf){
@@ -94,7 +94,9 @@ namespace netlink {
         // there is only one type of data for the request?
             // what types of requests should we support?
         size_t request(rtnl_msg&);
-        ssize_t receive(std::vector<std::uint8_t>&);
+        size_t request(msghdr&);
+        ssize_t receive(msghdr*);
+        ssize_t receive(std::vector<std::uint8_t>& );
     };
 
 } /* namespace netlink */

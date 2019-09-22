@@ -42,6 +42,13 @@ bool rta_ok(rtattr* rta, size_t len){
 void* rta_data(rtattr* attr){
     return RTA_DATA(attr);
 }
+#ifndef NDA_RTA
+#define NDA_RTA(r) ((struct rtattr *)(((char *)(r)) + NLMSG_ALIGN(sizeof(struct ndmsg))))
+#endif
+/* extinct macro to get the message from the ndmsg  as attr*/
+rtattr* nda_attr(ndmsg* nd){
+    return NDA_RTA(nd);
+}
 
 enum class rtnl_op : int {
     new_op = 0,
@@ -83,7 +90,11 @@ public:
     struct rtattr* current_attr;
     // number of attributes contained in the request
     size_t attr_num;
-    request(): hdr{0}, rt{0}, attr_num{0} {}
+    // h is the address to the start of the buffer
+    // 
+    request(void* h): hdr{reinterpret_cast<struct nlmsghdr*>(h)}, rt{0}, attr_num{0} {}
+    // add this method to the constructor to avoid
+    // two phase allocator
     void create(rtnlmsg_class msg_class, rtnl_op op);
     // Adds an attribute to the request
     // returns the pointer to the end of the attr block

@@ -4,7 +4,7 @@
 extern "C" {
     #include <string.h>
 }
-#include
+
 namespace netlink {
 
 void request::create(rtnlmsg_class msg_class, rtnl_op op){

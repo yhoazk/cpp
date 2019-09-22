@@ -6,6 +6,14 @@ package(default_visibility = ["//visibility:public"])
 # )
 
 
+# https://docs.bazel.build/versions/master/be/c-cpp.html#cc_library
+cc_library(
+    name = "nlmsg",
+    srcs = ["nlmsg.cpp"],
+    hdrs = ["nlmsg.h"],
+    deps = [":netlink_socket"],
+)
+
 cc_library(
     name = "netlink_socket",
     srcs = ["netlink_socket.cpp"],

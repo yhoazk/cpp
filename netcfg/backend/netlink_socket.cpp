@@ -28,7 +28,7 @@ namespace netlink {
         return true;
     }
     
-    size_t nl_socket::request(rtnl_msg& msg){
+    ssize_t nl_socket::request(rtnl_msg& msg){
         ssize_t sent{0};
         sent = sendmsg(sfd, (struct msghdr*) msg.data(), 0);
         if(-1 == sent){
@@ -37,7 +37,7 @@ namespace netlink {
         return sent;
     }
 
-    size_t nl_socket::request(msghdr* msg){
+    ssize_t nl_socket::request(msghdr* msg){
         ssize_t sent{0};
         sent = sendmsg(sfd, (struct msghdr*) msg, 0);
         if(-1 == sent){
@@ -45,7 +45,7 @@ namespace netlink {
         }
         return sent;
     }
-    // 
+
     ssize_t nl_socket::receive(std::vector<std::uint8_t>& response_buf){
         // the response is also a route link msg
         rtnl_msg resp;
@@ -54,8 +54,9 @@ namespace netlink {
         // handle errors and loop in case that the message is a multi-message
         return len;
     }
+
     void nl_socket::show(){
-        std::cout << "Socket Descriptor: " << this->sfd;
+        std::cout << "Socket Descriptor: " << sfd;
         std::cout << "\nThe socket is" << (binded? " " : " not ") << "binded\n";
     }
 }

@@ -4,6 +4,7 @@
 #include "netcfg.hpp"
 #include "backend/netlink_socket.h"
 #include "backend/request/nl_request.h"
+#include "backend/nlmsg.h"
 
 int skfd = -1;
 
@@ -136,24 +137,30 @@ bool getArp(std::vector<uint8_t>& arp_result){
 }
 
 int main(){
-    {
-        using namespace netlink;
-        netlink::nl_socket sockt;  // the connection to send the request
-        netlink::request req;    // contents of the request
-        std::vector<std::uint8_t> buffer;
-        buffer.reserve(512);
-        /* Create a getneigh request */
-        req.create(rtnlmsg_class::neigh, rtnl_op::get_op);
+    std::vector<std::uint8_t> buffer;
+    buffer.reserve( 1024 * 8 );
+    // {
+    //     using namespace netlink;
+    //     netlink::nl_socket sockt;  // the connection to send the request
+    //     netlink::request req(buffer.data());    // contents of the request
+    //     /* Create a getneigh request */
+    //     req.create(rtnlmsg_class::neigh, rtnl_op::get_op);
 
-        // rtnl_msg rtmsg(sockt. req); // wrapper of the request
-        netlink::rtnl_msg rtmsg(sockt.get_name(), &req);
-        sockt.allocate();
-        sockt._bind();
-        sockt.request(rtmsg);
-        sockt.receive(buffer);
-        sockt.show();
-    }
-    
+    //     // rtnl_msg rtmsg(sockt. req); // wrapper of the request
+    //     netlink::rtnl_msg rtmsg(sockt.get_name(), &req);
+    //     sockt.allocate();
+    //     sockt._bind();
+    //     sockt.request(rtmsg);
+    //     sockt.receive(buffer);
+    //     sockt.show();
+    // }
+    nlmsg arp;
+    netlink::request rq(buffer.data());
+    rq.create(netlink::rtnlmsg_class::neigh, netlink::rtnl_op::get_op);
+    arp.append_request(rq);
+    arp.open_connection();
+    arp.call();
+    arp.get(buffer);
     // std::vector<uint8_t> test;
     // getArp(test);
 
