@@ -43,11 +43,14 @@ namespace my
 
 int main(){
     /* simple systemcall */
-//        system("./my_script.sh");
+   for(int k =5; k>0;--k){
+       int exit_val = system("./my_script.sh &");
+       std::cout << "Exit val: " << std::hex << exit_val << std::endl;
+   }
     // this way it will block on every call and wait for finish
     // what is needed is to verify if the script is already running
     // and do exit of true
-   for(int k =5; k>0;--k)
-        my::pop("./my_script.sh &");
+//    for(int k =5; k>0;--k)
+        // my::pop("./my_script.sh &");
     return 0;
 }

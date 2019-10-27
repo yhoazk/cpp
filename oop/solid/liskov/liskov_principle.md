@@ -8,3 +8,18 @@
 - If and override method does nothing or just throws an exception, probably
   indicates a violation of the LSP.n
 
+Example:
+
+The tipical square, rectangle:
+
+```cpp
+struct rectangle{
+
+};
+
+struct square : rectangle {
+
+};
+
+void process(Rectangle& r)
+```
