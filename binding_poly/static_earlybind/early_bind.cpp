@@ -7,8 +7,7 @@
 
 using namespace std;
 
-class first
-{
+class first {
   int b;
 public:
   first(){b=10;}
