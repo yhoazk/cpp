@@ -23,6 +23,10 @@ struct my_other{
     long yy;
 };
 
+struct att_struct{
+
+} __attribute__((__pack__));
+
 int main(){
     struct test a;
     a.aa = (char) 0x44;
