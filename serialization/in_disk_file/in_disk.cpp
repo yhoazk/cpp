@@ -113,6 +113,24 @@ int main(int argc, char** argv){
     }
     std::cout << "Json: " << v << '\n';
 
+    std::string jsonval = "{\"a\":42, \"key\": \"other kex\"}";
+    picojson::value val;
+    std::string parse_err = picojson::parse(val, jsonval);
+    if(!parse_err.empty()){
+        std::cerr << "Error parsing:" << json;
+    } else if(!val.is<picojson::object>()) {
+        std::cerr << "Error parsing:" << json;
+    }
+
+    const picojson::value::object& obj = val.get<picojson::object>();
+    for(picojson::value::object::const_iterator i = obj.begin();
+            i != obj.end();
+            ++i){
+        std::cout <<  "Key: " << i->first << " Value: " << i->second.to_str() << '\n';
+
+    }
+
+
     // read and restore the log
 //    while(!this_end){
 
