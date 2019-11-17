@@ -2,6 +2,8 @@
 #include <fstream>
 #include <csignal>
 
+#include "picojson.h"
+
 using namespace std;
 bool this_end{false};
 const static size_t num_entries = 1<<8;
@@ -90,15 +92,27 @@ void handle_signal(int sig){
 }
 
 int main(int argc, char** argv){
-    signal(SIGINT, handle_signal);
-    cout << "argc : " << argc << '\n';
-    if(argc >= 2){
-        cout << argv[1];
+    // signal(SIGINT, handle_signal);
+    // cout << "argc : " << argc << '\n';
+    // if(argc >= 2){
+    //     cout << argv[1];
+    // }
+    // file_log flog(argv[1], log_struct);
+    // flog.restore();
+    // cout << "boot count: " << log_struct.boot_count++ << '\n';
+    // flog.save();
+
+    // test picojson
+
+    std::string json = "[\"hello\"]";
+    picojson::value v;
+    std::cout << "V bfore parse: " << v << '\n';
+    std::string err = picojson::parse(v, json);
+    if(!err.empty()){
+        std::cerr << "Error parsing:" << json;
     }
-    file_log flog(argv[1], log_struct);
-    flog.restore();
-    cout << "boot count: " << log_struct.boot_count++ << '\n';
-    flog.save();
+    std::cout << "Json: " << v << '\n';
+
     // read and restore the log
 //    while(!this_end){
 
