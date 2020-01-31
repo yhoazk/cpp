@@ -19,21 +19,15 @@ struct LUT {
             emmc_conf[i].first = selection[i];
         }
     }
-    conf_element emmc_conf[25];
+    conf_element emmc_conf[K];
 };
 
-constexpr conf_element emmc_conf[] = {
+constexpr conf_element emmc_config[] = {
         std::make_pair("PROP_AAAA", 0),
         std::make_pair("PROP_AABB", 1),
         std::make_pair("PROP_BBBB", 2),
         std::make_pair("PROP_BBCC", 3),
         std::make_pair("PROP_CCCC", 4),
-        std::make_pair("PROP_CCDD", 5),
-        std::make_pair("PROP_DDDD", 6),
-        std::make_pair("PROP_DDEE", 7),
-        std::make_pair("PROP_EEEE", 8),
-        std::make_pair("PROP_ABCD", 9),
-        std::make_pair("PROP_CDAB", 10),
         std::make_pair("PROP_BCDA", 11),
         std::make_pair("PROP_DABC", 12),
         std::make_pair("PROP_XXY1", 13),
@@ -53,7 +47,7 @@ constexpr conf_element emmc_conf[] = {
 
 int main(int argc, char const *argv[])
 {
-    std::cout << emmc_conf[0].first << std::endl;
+    std::cout << emmc_config[0].first << std::endl;
     constexpr auto lut = LUT<sizeof(selection) / sizeof(selection[0])>();
     for(auto x : lut.emmc_conf){
         std::cout << "x: " << x.first << '\n';
