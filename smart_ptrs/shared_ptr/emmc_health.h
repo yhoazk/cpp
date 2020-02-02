@@ -2,11 +2,34 @@
 #include <string>
 #include <iostream>
 #include <cerrno>
+
+#include <sys/stat.h>
+#include <sstream>
 /* whether the variable is in stack or in heap
    is relevant depending on the OS. In FC30 x86_64
    the  */
 
 namespace emmc { 
+namespace detail {
+    const size_t mmc_driver_major = MMC_BLOCK_MAJOR;
+    std::stringstream find_in_sys(const char* c_path){
+        std::stringstream sys_path{"/sys/dev/block/"};
+        sys_path << mmc_driver_major << ':';
+
+        struct stat dev_stat;
+        if(stat(c_path, &dev_stat) == 0){
+            sys_path << dev_stat.st_rdev << "/device/";
+        } else {
+            sys_path.str(std::string());
+        }
+        return sys_path;
+    }
+
+    std::stringstream find_in_sys(std::string& dev_path){
+        return find_in_sys(dev_path.c_str());
+    }
+
+} // napespace detail
 namespace settings {
     struct config {
         uint8_t dev_name[16];
@@ -56,16 +79,16 @@ namespace utils {
         cmd.flags  = 0;
         cmd.blksz  = 0 ;
         cmd.blocks = 0;
-
-    }
+        return cmd;
+    };
 
 // enable_if 
 
-    class emmc_fd {
+    class handle_fd {
         int _fd;
         char _dev_name[25];
         public:
-        explicit emmc_fd(std::string dev_name): _fd{-1} {
+        explicit handle_fd(std::string dev_name): _fd{-1} {
             std::cout << "opening device" << dev_name << '\n';
             _fd = open(dev_name.c_str(), O_RDWR);
             if(-1 == _fd){
@@ -78,12 +101,16 @@ namespace utils {
             }
         }
 
-        ~emmc_fd(){
+        // do not forget to close the emmc file handle
+        ~handle_fd(){
             std::cout << "closing device" << _dev_name << '\n';
             if(_fd != -1){
                 close(_fd);
             }
         }
+        // Return a copy of the fd
+        int get() const { return _fd; }
+        // enable status checks 
         bool operator !(){ return (-1 != _fd); }
     };
 
@@ -98,41 +125,42 @@ namespace utils {
         }
         return status;
     }
+#if 0 // accept file descriptors already opened an managed by others
+    bool read_cid_register(emmc::registers::cid_data_t& cid_data, int fd){
+        static_assert(alignof(cid_data.data()) >= 8ul, "Data should be aligned to at least 8bytes");
 
-    bool read_cid_register(emmc::registers::cid_data_t& cid_data){
-        static_assert(alignof(cid_data.data()) >= 8ul, "Data should be aligned to least 8bytes");
+    }
+#endif
+    // cid does not need to send an ioctl? No
+    // the cid data is gathered during device initialization by the driver
+    bool read_cid_register(emmc::registers::cid_data_t& cid_data, handle_fd emmc_fd_){
+        static_assert(alignof(cid_data.data()) >= 8ul, "Data should be aligned to at least 8bytes");
         bool status{false};
 
-        auto cmd = cmd_factory();
-        mmc_ioc_cmd_set_data(cmd, cid_data.data());
 
-        // do_read_emmc()
-
-        size_t al = alignof(cid_data);
-        std::cout << "AL: " << al << '\n';
         return status;
     }
 
 
     bool read_csd_register(emmc::registers::csd_data_t& csd_data){
-        static_assert(alignof(csd_data.data()) >= 8ul, "Data should be aligned to least 8bytes");
+        static_assert(alignof(csd_data.data()) >= 8ul, "Data should be aligned to at least 8bytes");
         std::cout << "csd_data\n";
         return true;
     }
 
     bool read_ecsd_register(emmc::registers::ecsd_data_t& ecsd_data){
-        static_assert(alignof(ecsd_data.data()) >= 8ul, "Data should be aligned to least 8bytes");
+        static_assert(alignof(ecsd_data.data()) >= 8ul, "Data should be aligned to at least 8bytes");
         std::cout << "ecsd_Data\n";
         return true;
     }
 
     bool read_ecrd_register(emmc::registers::ecrd_data_t& ecrd_data){
-        static_assert(alignof(ecrd_data.data()) >= 8ul, "Data should be aligned to least 8bytes");
+        static_assert(alignof(ecrd_data.data()) >= 8ul, "Data should be aligned to at least 8bytes");
         std::cout << "ecrd_data\n";
         return true;
     }
     bool read_bbcrd_register(emmc::registers::bbcrd_data_t& bbcrd_data){
-        static_assert(alignof(bbcrd_data.data()) >= 8ul, "Data should be aligned to least 8bytes");
+        static_assert(alignof(bbcrd_data.data()) >= 8ul, "Data should be aligned to at least 8bytes");
         std::cout << "bbcrd_data\n";
         return true;
     }

@@ -118,8 +118,12 @@ int main(int argc, char** argv){
     std::cout << "reference counter: " << emmc_block.use_count();
     std::vector<uint8_t> copy_mmc;
     {
-        emmc::utils::emmc_fd mmcblk0("/tmp/some_file");
+        emmc::utils::handle_fd mmcblk0("/tmp/some_file");
         std::cout << "It was successfully open: " << !mmcblk0 << '\n';
+
+    }
+    {
+        std::cout << "Test find_in_sys" << emmc::detail::find_in_sys("/dev/mmcblk0").str();
 
     }
     // emmc_health(copy_mmc);
