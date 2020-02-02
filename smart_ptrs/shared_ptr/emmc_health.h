@@ -25,11 +25,34 @@ namespace detail {
     const int mmc_rsp_r1{(mmc_rsp_present | mmc_rsp_crc | mmc_rsp_opcode)};
 
     const int mmc_send_ext_csd {(1 << 3)};
-
-    const size_t kBlockSize{512};
-
-
+    const size_t mmc_block_bize{512};
     const size_t mmc_driver_major = MMC_BLOCK_MAJOR;
+
+    // enum jedec_cmd : unsgined int {
+    //     send_ext_csd = 8u,
+    //     gen_cmd      = 56u,
+    // };
+    // Jedec eMMC command list, only adtc supported/needed
+    enum jedec_cmd : unsigned int {
+        send_ext_csd = 8u,
+        gen_cmd      = 56u,
+    };
+    // Note: Micron specific
+    enum cmd65_micron : unsigned int {
+        fw_mac          = 0b00000000, // firmware message autentication code (MAC) signature check
+        init_rt_bbc     = 0b00001000, // initial run time bad block, and remaining spare blocks count
+        min_avg_max     = 0b00010000, // Min/Max/Avg erase count
+        min_avg_max_mlc = 0b00010001, // Min/Max/Avg erase count MLC area
+        min_avg_max_slc = 0b00010010, // Min/Max/Avg erase count SLC area
+        bbc_count_info  = 0b01000000, // Bad block count information
+        blk_erase_cnt_t = 0b01000001, // Total number of block erase count tables
+        blk_erase_ret_r = 0b01000010, // Block erase count retrieve
+        blk_addr_type   = 0b01000011, // Block address type retrieve
+        buf_blk_refresh = 0b01010011, // Buffer blocks refresh
+    };
+
+
+
     std::stringstream find_in_sys(const char* c_path){
         std::stringstream sys_path{};
 
@@ -93,23 +116,39 @@ namespace utils {
     // Every command has a fixed length of 48bits
     //  addressed data transfer commands
     // using adct_cmd_t = std::array<uint8_t, 6>;
-    // C++ bit masks??
     // only adtc commands will be supported for now
-    struct mmc_ioc_cmd cmd_factory(uint8_t* data){
+    struct mmc_ioc_cmd cmd8_factory(uint8_t* data){
+        using namespace emmc::detail;
+        
+        struct mmc_ioc_cmd cmd;
+        memset(&cmd, 0, sizeof(mmc_ioc_cmd));
+        cmd.write_flag = 0;
+        cmd.opcode = detail::jedec_cmd::send_ext_csd;
+        cmd.arg = 0;
+        cmd.flags  = mmc_rsp_spi_r1 | mmc_rsp_r1 | mmc_cmd_adtc;
+        cmd.blksz  = detail::mmc_block_bize;
+        cmd.blocks = 1;
+        mmc_ioc_cmd_set_data(cmd, data);
+        return cmd;
+    };
+
+    struct mmc_ioc_cmd cmd56_factory(uint8_t* data, 
+                                     detail::cmd65_micron cmd56_arg){
         using namespace emmc::detail;
         
         struct mmc_ioc_cmd cmd;
         memset(&cmd, 0, sizeof(mmc_ioc_cmd));
 
         cmd.write_flag = 0;
-        cmd.opcode = mmc_send_ext_csd;
-        cmd.arg = 0;
+        cmd.opcode = detail::jedec_cmd::gen_cmd;
+        cmd.arg = cmd56_arg;
         cmd.flags  = mmc_rsp_spi_r1 | mmc_rsp_r1 | mmc_cmd_adtc;
-        cmd.blksz  = 512;
+        cmd.blksz  = detail::mmc_block_bize;
         cmd.blocks = 1;
         mmc_ioc_cmd_set_data(cmd, data);
         return cmd;
     };
+
 
 // enable_if 
 
@@ -143,23 +182,18 @@ namespace utils {
         operator bool(){ return (-1 != _fd); }
     };
 
-    size_t do_read_emmc(int fd, mmc_ioc_cmd* cmd_data){
-        size_t status = -1;
+    bool do_read_emmc(int fd, mmc_ioc_cmd* cmd_data){
+        bool status{false};
         if(ioctl(fd, MMC_IOC_CMD, cmd_data) != -1){
             // at this point the data has been copied to the given array
             std::cout << "success ioctl\n";
-            status = 0;
+            status = true;
         } else {
-            std::cerr << "ioctl failed: " << std::string(strerror(errno));
+            std::cerr << "ioctl failed: " << std::string(strerror(errno)) << '\n';
         }
         return status;
     }
-#if 0 // accept file descriptors already opened an managed by others
-    bool read_cid_register(emmc::registers::cid_data_t& cid_data, int fd){
-        static_assert(alignof(cid_data.data()) >= 8ul, "Data should be aligned to at least 8bytes");
 
-    }
-#endif
     // cid does not need to send an ioctl? No
     // the cid data is gathered during device initialization by the driver
     bool read_cid_register(emmc::registers::cid_data_t& cid_data, const char* emmc_dev_path){
@@ -197,19 +231,33 @@ namespace utils {
         bool status{false};
 
         if(dev_emmc.get() != -1){
-            auto cmd = cmd_factory(ecsd_data.datmmcblk0}
+            auto cmd = cmd8_factory(ecsd_data.data());
+            status = do_read_emmc(dev_emmc.get(), &cmd);
+        }
         return status;
     }
-
+    // erase count response 
     bool read_ecrd_register(emmc::registers::ecrd_data_t& ecrd_data, const char* emmc_dev_path){
         static_assert(alignof(ecrd_data.data()) >= 8ul, "Data should be aligned to at least 8bytes");
-        std::cout << "ecrd_data\n";
-        return true;
+        handle_fd dev_emmc(emmc_dev_path);
+        bool status{false};
+
+        if(dev_emmc.get() != -1){
+            auto cmd = cmd56_factory(ecrd_data.data(), detail::cmd65_micron::blk_erase_cnt_t);
+            status = do_read_emmc(dev_emmc.get(), &cmd);
+        }
+        return status;
     }
     bool read_bbcrd_register(emmc::registers::bbcrd_data_t& bbcrd_data, const char* emmc_dev_path){
         static_assert(alignof(bbcrd_data.data()) >= 8ul, "Data should be aligned to at least 8bytes");
-        std::cout << "bbcrd_data\n";
-        return true;
+        handle_fd dev_emmc(emmc_dev_path);
+        bool status{false};
+
+        if(dev_emmc.get() != -1){
+            auto cmd = cmd56_factory(bbcrd_data.data(), detail::cmd65_micron::bbc_count_info);
+            status = do_read_emmc(dev_emmc.get(), &cmd);
+        }
+        return status;
     }
 
 
