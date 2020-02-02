@@ -124,6 +124,19 @@ int main(int argc, char** argv){
     }
     {
         std::cout << "Test find_in_sys" << emmc::detail::find_in_sys("/dev/mmcblk0").str();
+        
+        emmc::registers::cid_data_t cid{0};
+        std::cout << "Test read cid" << emmc::utils::read_cid_register(cid, "/dev/mmcblk0");
+        for (auto &&i : cid){
+            std::cout << std::hex << i << ' ';
+        }
+        
+        emmc::registers::csd_data_t csd{0};
+        std::cout << "Test read csd" << emmc::utils::read_csd_register(csd, "/dev/mmcblk0");
+        for (auto &&i : csd){
+            std::cout << std::hex << i << ' ';
+        }
+        
 
     }
     // emmc_health(copy_mmc);

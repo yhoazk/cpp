@@ -1,6 +1,7 @@
 #include <array>
 #include <string>
 #include <iostream>
+#include <fstream>
 #include <cerrno>
 
 #include <sys/stat.h>
@@ -13,12 +14,21 @@ namespace emmc {
 namespace detail {
     const size_t mmc_driver_major = MMC_BLOCK_MAJOR;
     std::stringstream find_in_sys(const char* c_path){
-        std::stringstream sys_path{"/sys/dev/block/"};
-        sys_path << mmc_driver_major << ':';
+        std::stringstream sys_path{};
 
         struct stat dev_stat;
         if(stat(c_path, &dev_stat) == 0){
-            sys_path << dev_stat.st_rdev << "/device/";
+            int major = static_cast<int>( (dev_stat.st_rdev & 0xff00) >> 8);
+            int minor = static_cast<int>( (dev_stat.st_rdev & 0xff) );
+
+            if(MMC_BLOCK_MAJOR == major){
+                sys_path << "/sys/dev/block/";
+                sys_path << major << ':' << minor;
+                sys_path << "/device/";
+            } else {
+                std::cerr << "Not an eMMC device!\n";
+            }
+
         } else {
             sys_path.str(std::string());
         }
@@ -133,19 +143,34 @@ namespace utils {
 #endif
     // cid does not need to send an ioctl? No
     // the cid data is gathered during device initialization by the driver
-    bool read_cid_register(emmc::registers::cid_data_t& cid_data, handle_fd emmc_fd_){
+    bool read_cid_register(emmc::registers::cid_data_t& cid_data, const char* emmc_dev_path){
         static_assert(alignof(cid_data.data()) >= 8ul, "Data should be aligned to at least 8bytes");
         bool status{false};
+        auto sys_path = emmc::detail::find_in_sys(emmc_dev_path);
+        sys_path << "cid";
+        std::ifstream cid_reg(sys_path.str(), std::ios::binary);
 
+        if(cid_reg.is_open()){
+            cid_reg.read(reinterpret_cast<char*>(cid_data.data()), cid_data.size());
+        }
 
         return status;
     }
 
 
-    bool read_csd_register(emmc::registers::csd_data_t& csd_data){
+    bool read_csd_register(emmc::registers::csd_data_t& csd_data, const char* emmc_dev_path){
         static_assert(alignof(csd_data.data()) >= 8ul, "Data should be aligned to at least 8bytes");
-        std::cout << "csd_data\n";
-        return true;
+        bool status{false};
+        auto sys_path = emmc::detail::find_in_sys(emmc_dev_path);
+        sys_path << "csd";
+        std::ifstream cid_reg(sys_path.str(), std::ios::binary);
+
+        if(cid_reg.is_open()){
+            cid_reg.read(reinterpret_cast<char*>(csd_data.data()), csd_data.size());
+        }
+
+        return status;
+
     }
 
     bool read_ecsd_register(emmc::registers::ecsd_data_t& ecsd_data){
