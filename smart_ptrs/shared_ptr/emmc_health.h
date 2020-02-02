@@ -122,18 +122,17 @@ namespace utils {
             _fd = open(dev_name.c_str(), O_RDWR);
             if(-1 == _fd){
                 std::cerr << "Unable to open device: " << dev_name
-                          << std::string(strerror(errno));
+                          << std::string(strerror(errno)) << '\n';
             }else{
                 memcpy(_dev_name, dev_name.c_str(), sizeof(_dev_name));
                 _dev_name[24] = '\0';
-                std::cout << "Device:" << _dev_name << "in use\n";
             }
         }
 
         // do not forget to close the emmc file handle
         ~handle_fd(){
-            std::cout << "closing device" << _dev_name << '\n';
             if(_fd != -1){
+                std::cout << "closing device" << _dev_name << '\n';
                 close(_fd);
             }
         }
@@ -146,7 +145,7 @@ namespace utils {
 
     size_t do_read_emmc(int fd, mmc_ioc_cmd* cmd_data){
         size_t status = -1;
-        if(ioctl(fd, MMC_IOC_CMD, cmd_data) < 0){
+        if(ioctl(fd, MMC_IOC_CMD, cmd_data) != -1){
             // at this point the data has been copied to the given array
             std::cout << "success ioctl\n";
             status = 0;
@@ -197,10 +196,8 @@ namespace utils {
         handle_fd dev_emmc(emmc_dev_path);
         bool status{false};
 
-        if(dev_emmc){
-            auto cmd = cmd_factory(ecsd_data.data());
-            status = do_read_emmc(dev_emmc.get(), &cmd);
-        }
+        if(dev_emmc.get() != -1){
+            auto cmd = cmd_factory(ecsd_data.datmmcblk0}
         return status;
     }
 
