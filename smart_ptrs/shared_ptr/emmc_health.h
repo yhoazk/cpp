@@ -12,6 +12,23 @@
 
 namespace emmc { 
 namespace detail {
+
+    const int mmc_rsp_present {1 << 0};
+    const int mmc_rsp_136     {1 << 1};
+    const int mmc_rsp_crc     {1 << 2};
+    const int mmc_rsp_busy    {1 << 3};
+    const int mmc_rsp_opcode  {1 << 4};
+
+    const int mmc_cmd_adtc    {1 << 5};
+    const int mmc_rsp_spi_s1  {1 << 7};
+    const int mmc_rsp_spi_r1  {1 << 7};
+    const int mmc_rsp_r1{(mmc_rsp_present | mmc_rsp_crc | mmc_rsp_opcode)};
+
+    const int mmc_send_ext_csd {(1 << 3)};
+
+    const size_t kBlockSize{512};
+
+
     const size_t mmc_driver_major = MMC_BLOCK_MAJOR;
     std::stringstream find_in_sys(const char* c_path){
         std::stringstream sys_path{};
@@ -78,17 +95,19 @@ namespace utils {
     // using adct_cmd_t = std::array<uint8_t, 6>;
     // C++ bit masks??
     // only adtc commands will be supported for now
-    struct mmc_ioc_cmd cmd_factory(){
-        mmc_ioc_cmd cmd;
+    struct mmc_ioc_cmd cmd_factory(uint8_t* data){
+        using namespace emmc::detail;
+        
+        struct mmc_ioc_cmd cmd;
         memset(&cmd, 0, sizeof(mmc_ioc_cmd));
+
         cmd.write_flag = 0;
-        cmd.is_acmd = 0;
-        cmd.opcode = 0;
+        cmd.opcode = mmc_send_ext_csd;
         cmd.arg = 0;
-        cmd.flags = 0;
-        cmd.flags  = 0;
-        cmd.blksz  = 0 ;
-        cmd.blocks = 0;
+        cmd.flags  = mmc_rsp_spi_r1 | mmc_rsp_r1 | mmc_cmd_adtc;
+        cmd.blksz  = 512;
+        cmd.blocks = 1;
+        mmc_ioc_cmd_set_data(cmd, data);
         return cmd;
     };
 
@@ -121,7 +140,8 @@ namespace utils {
         // Return a copy of the fd
         int get() const { return _fd; }
         // enable status checks 
-        bool operator !(){ return (-1 != _fd); }
+        // bool operator !(){ return !(-1 != _fd); }
+        operator bool(){ return (-1 != _fd); }
     };
 
     size_t do_read_emmc(int fd, mmc_ioc_cmd* cmd_data){
@@ -170,21 +190,26 @@ namespace utils {
         }
 
         return status;
-
     }
 
-    bool read_ecsd_register(emmc::registers::ecsd_data_t& ecsd_data){
+    bool read_ecsd_register(emmc::registers::ecsd_data_t& ecsd_data, const char* emmc_dev_path){
         static_assert(alignof(ecsd_data.data()) >= 8ul, "Data should be aligned to at least 8bytes");
-        std::cout << "ecsd_Data\n";
-        return true;
+        handle_fd dev_emmc(emmc_dev_path);
+        bool status{false};
+
+        if(dev_emmc){
+            auto cmd = cmd_factory(ecsd_data.data());
+            status = do_read_emmc(dev_emmc.get(), &cmd);
+        }
+        return status;
     }
 
-    bool read_ecrd_register(emmc::registers::ecrd_data_t& ecrd_data){
+    bool read_ecrd_register(emmc::registers::ecrd_data_t& ecrd_data, const char* emmc_dev_path){
         static_assert(alignof(ecrd_data.data()) >= 8ul, "Data should be aligned to at least 8bytes");
         std::cout << "ecrd_data\n";
         return true;
     }
-    bool read_bbcrd_register(emmc::registers::bbcrd_data_t& bbcrd_data){
+    bool read_bbcrd_register(emmc::registers::bbcrd_data_t& bbcrd_data, const char* emmc_dev_path){
         static_assert(alignof(bbcrd_data.data()) >= 8ul, "Data should be aligned to at least 8bytes");
         std::cout << "bbcrd_data\n";
         return true;
