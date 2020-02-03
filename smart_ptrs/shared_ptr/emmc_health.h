@@ -37,18 +37,18 @@ namespace detail {
         send_ext_csd = 8u,
         gen_cmd      = 56u,
     };
-    // Note: Micron specific
+    // Note: Micron specific, check that the last bit is 1 for read operations
     enum cmd65_micron : unsigned int {
-        fw_mac          = 0b00000000, // firmware message autentication code (MAC) signature check
-        init_rt_bbc     = 0b00001000, // initial run time bad block, and remaining spare blocks count
-        min_avg_max     = 0b00010000, // Min/Max/Avg erase count
-        min_avg_max_mlc = 0b00010001, // Min/Max/Avg erase count MLC area
-        min_avg_max_slc = 0b00010010, // Min/Max/Avg erase count SLC area
-        bbc_count_info  = 0b01000000, // Bad block count information
-        blk_erase_cnt_t = 0b01000001, // Total number of block erase count tables
-        blk_erase_ret_r = 0b01000010, // Block erase count retrieve
-        blk_addr_type   = 0b01000011, // Block address type retrieve
-        buf_blk_refresh = 0b01010011, // Buffer blocks refresh
+        fw_mac          = 0b000'0000'0, // firmware message autentication code (MAC) signature check
+        init_rt_bbc     = 0b000'0100'1, // initial run time bad block, and remaining spare blocks count
+        min_avg_max     = 0b000'1000'1, // Min/Max/Avg erase count
+        min_avg_max_mlc = 0b000'1000'1, // Min/Max/Avg erase count MLC area
+        min_avg_max_slc = 0b000'1001'1, // Min/Max/Avg erase count SLC area
+        bbc_count_info  = 0b010'0000'1, // Bad block count information
+        blk_erase_cnt_t = 0b010'0000'1, // Total number of block erase count tables
+        blk_erase_ret_r = 0b010'0001'1, // Block erase count retrieve
+        blk_addr_type   = 0b010'0001'1, // Block address type retrieve
+        buf_blk_refresh = 0b010'1001'1, // Buffer blocks refresh
     };
 
 
@@ -80,21 +80,14 @@ namespace detail {
     }
 
 } // napespace detail
-namespace settings {
-    struct config {
-        uint8_t dev_name[16];
-    };
-    using emmc_512block_t =  /*alignas(16)*/ std::array<uint8_t, 512>;
-    using emmc_128block_t =  /*alignas(16)*/ std::array<uint8_t, 128>;
-} // namespace
 
 namespace registers {
     // from TN-FC-32:
     //enum class register_size : size_t{
     enum register_size : size_t{
-        kCID   = 128,  // Card identification
-        kCSD   = 128,  // Card-specific data
-        kECSD  = 512,  // Extended card-specific data
+        kCID   =  16,  // Card identification 128 BITTTTS
+        kCSD   =  16,  // Card-specific data
+        kECSD  = 512,  // Extended card-specific data 512 BYTTES
         kECRD  = 512,  // Erase count response data
         kBBCRD = 512   // Bad block count response data
     };
@@ -109,13 +102,8 @@ namespace registers {
 
 
 namespace utils {
-    // send emmc command
-    // enum commands : uint8_t {
-
-    // }
     // Every command has a fixed length of 48bits
     //  addressed data transfer commands
-    // using adct_cmd_t = std::array<uint8_t, 6>;
     // only adtc commands will be supported for now
     struct mmc_ioc_cmd cmd8_factory(uint8_t* data){
         using namespace emmc::detail;
@@ -156,6 +144,9 @@ namespace utils {
         int _fd;
         char _dev_name[25];
         public:
+        handle_fd(const handle_fd&) = delete;
+        handle_fd& operator=(handle_fd const&) = delete;
+
         explicit handle_fd(std::string dev_name): _fd{-1} {
             std::cout << "opening device" << dev_name << '\n';
             _fd = open(dev_name.c_str(), O_RDWR);
@@ -194,35 +185,29 @@ namespace utils {
         return status;
     }
 
-    // cid does not need to send an ioctl? No
-    // the cid data is gathered during device initialization by the driver
-    bool read_cid_register(emmc::registers::cid_data_t& cid_data, const char* emmc_dev_path){
+    bool read_sys_register(emmc::registers::cid_data_t& cid_data,
+                            const char* emmc_dev_path,
+                             const char* reg){
         static_assert(alignof(cid_data.data()) >= 8ul, "Data should be aligned to at least 8bytes");
-        bool status{false};
         auto sys_path = emmc::detail::find_in_sys(emmc_dev_path);
-        sys_path << "cid";
+        sys_path << reg;
         std::ifstream cid_reg(sys_path.str(), std::ios::binary);
 
-        if(cid_reg.is_open()){
+        if(cid_reg){
             cid_reg.read(reinterpret_cast<char*>(cid_data.data()), cid_data.size());
         }
 
-        return status;
+        return (cid_reg.tellg() == cid_data.size());
+    }
+    // cid does not need to send an ioctl? No
+    // the cid data is gathered during device initialization by the driver
+    bool read_cid_register(emmc::registers::cid_data_t& cid_data, const char* emmc_dev_path){
+        return read_sys_register(cid_data, emmc_dev_path, "cid");
     }
 
 
     bool read_csd_register(emmc::registers::csd_data_t& csd_data, const char* emmc_dev_path){
-        static_assert(alignof(csd_data.data()) >= 8ul, "Data should be aligned to at least 8bytes");
-        bool status{false};
-        auto sys_path = emmc::detail::find_in_sys(emmc_dev_path);
-        sys_path << "csd";
-        std::ifstream cid_reg(sys_path.str(), std::ios::binary);
-
-        if(cid_reg.is_open()){
-            cid_reg.read(reinterpret_cast<char*>(csd_data.data()), csd_data.size());
-        }
-
-        return status;
+        return read_sys_register(csd_data, emmc_dev_path, "csd");
     }
 
     bool read_ecsd_register(emmc::registers::ecsd_data_t& ecsd_data, const char* emmc_dev_path){
@@ -236,7 +221,7 @@ namespace utils {
         }
         return status;
     }
-    // erase count response 
+
     bool read_ecrd_register(emmc::registers::ecrd_data_t& ecrd_data, const char* emmc_dev_path){
         static_assert(alignof(ecrd_data.data()) >= 8ul, "Data should be aligned to at least 8bytes");
         handle_fd dev_emmc(emmc_dev_path);
@@ -254,7 +239,7 @@ namespace utils {
         bool status{false};
 
         if(dev_emmc.get() != -1){
-            auto cmd = cmd56_factory(bbcrd_data.data(), detail::cmd65_micron::bbc_count_info);
+            auto cmd = cmd56_factory(bbcrd_data.data(), detail::cmd65_micron::min_avg_max);
             status = do_read_emmc(dev_emmc.get(), &cmd);
         }
         return status;

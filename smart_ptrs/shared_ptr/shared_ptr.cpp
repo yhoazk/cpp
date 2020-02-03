@@ -68,24 +68,28 @@ int main(int argc, char** argv){
         
         emmc::registers::cid_data_t cid{0};
         std::cout << "Test read cid\n";
-        emmc::utils::read_cid_register(cid, "/dev/mmcblk0");
-        for (auto &&i : cid){
-            std::cout << std::hex << i;
+        if(emmc::utils::read_cid_register(cid, "/dev/mmcblk0")){
+            for (auto &&i : cid){
+                std::cout << std::setfill('0') << std::setw(2) << std::hex << i;
+            }
         }
         std::cout << std::endl;
         emmc::registers::csd_data_t csd{0};
         std::cout << "Test read csd\n";
-        emmc::utils::read_csd_register(csd, "/dev/mmcblk0");
-        for (auto &&i : csd){
-            std::cout << std::hex << i;
+        if(emmc::utils::read_csd_register(csd, "/dev/mmcblk0")){
+
+            for (auto &&i : csd){
+                std::cout << std::setfill('0') << std::setw(2) << std::hex << i;
+            }
         }
         std::cout << std::endl;
         
         emmc::registers::ecsd_data_t ext_csd{0};
         std::cout << "Test read ext_csd\n";
-        emmc::utils::read_ecsd_register(ext_csd, "/dev/mmcblk0");
-        for (auto &&i : ext_csd){
-            std::cout << std::hex << i;
+        if(emmc::utils::read_ecsd_register(ext_csd, "/dev/mmcblk0")) {
+            for (auto &&i : ext_csd){
+                std::cout << std::hex << i;
+            }
         }
         std::cout << std::endl;
     }
