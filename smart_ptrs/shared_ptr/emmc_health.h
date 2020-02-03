@@ -191,6 +191,7 @@ namespace utils {
         static_assert(alignof(cid_data.data()) >= 8ul, "Data should be aligned to at least 8bytes");
         auto sys_path = emmc::detail::find_in_sys(emmc_dev_path);
         sys_path << reg;
+        std::cout << "Tying to read register " << sys_path.str() << '\n';
         std::ifstream cid_reg(sys_path.str(), std::ios::binary);
 
         if(cid_reg){
@@ -222,31 +223,25 @@ namespace utils {
         return status;
     }
 
+    bool read_cmd56_register(emmc::registers::ecsd_data_t& reg_data, const char* emmc_dev_path, detail::cmd65_micron arg){
+        static_assert(alignof(reg_data.data()) >= 8ul, "Data should be aligned to at least 8bytes");
+        handle_fd dev_emmc(emmc_dev_path);
+        bool status{false};
+
+        if(dev_emmc.get() != -1){
+            auto cmd = cmd56_factory(reg_data.data(), arg);
+            status = do_read_emmc(dev_emmc.get(), &cmd);
+        }
+        return status;
+    }
+
     bool read_ecrd_register(emmc::registers::ecrd_data_t& ecrd_data, const char* emmc_dev_path){
-        static_assert(alignof(ecrd_data.data()) >= 8ul, "Data should be aligned to at least 8bytes");
-        handle_fd dev_emmc(emmc_dev_path);
-        bool status{false};
-
-        if(dev_emmc.get() != -1){
-            auto cmd = cmd56_factory(ecrd_data.data(), detail::cmd65_micron::blk_erase_cnt_t);
-            status = do_read_emmc(dev_emmc.get(), &cmd);
-        }
-        return status;
+        return read_cmd56_register(ecrd_data, emmc_dev_path, detail::cmd65_micron::blk_erase_cnt_t);
     }
+
     bool read_bbcrd_register(emmc::registers::bbcrd_data_t& bbcrd_data, const char* emmc_dev_path){
-        static_assert(alignof(bbcrd_data.data()) >= 8ul, "Data should be aligned to at least 8bytes");
-        handle_fd dev_emmc(emmc_dev_path);
-        bool status{false};
-
-        if(dev_emmc.get() != -1){
-            auto cmd = cmd56_factory(bbcrd_data.data(), detail::cmd65_micron::min_avg_max);
-            status = do_read_emmc(dev_emmc.get(), &cmd);
-        }
-        return status;
+        return read_cmd56_register(bbcrd_data, emmc_dev_path, detail::cmd65_micron::min_avg_max);
     }
-
-
-
 
 } // namespace utils
 
