@@ -102,6 +102,27 @@ namespace registers {
 
 
 namespace utils {
+
+// template <typename T>
+// constexpr bool is_lvalue(T&) {
+//     return true;
+// }
+
+// template <typename T>
+// constexpr bool is_lvalue(T&&) {
+//     return false;
+// }
+
+
+    // template <typename T>
+    //  constexpr bool is_lvalue(T&&) {
+    //   return std::is_lvalue_reference<T>{};
+    // }
+
+    // template <typename T>
+    // constexpr bool is_rval(T&&){
+    //     return std::is_rvalue_reference<T>{};
+    // }
     // Every command has a fixed length of 48bits
     //  addressed data transfer commands
     // only adtc commands will be supported for now
@@ -117,6 +138,8 @@ namespace utils {
         cmd.blksz  = detail::mmc_block_bize;
         cmd.blocks = 1;
         mmc_ioc_cmd_set_data(cmd, data);
+        std::cout << "Is lval: " << std::is_lvalue_reference<decltype(cmd)>::value << '\n';
+        std::cout << "IS rval: " << std::is_rvalue_reference<decltype(cmd)>::value << '\n';
         return cmd;
     };
 
@@ -244,6 +267,8 @@ namespace utils {
     }
 
 } // namespace utils
+
+
 
 
 } // namespace emmc

@@ -58,6 +58,13 @@ int mock_emmc_ioctl(int fd, int flags, struct mmc_ioc_cmd* mmc_operation){
 int main(int argc, char** argv){
     // std::cout << std::hex << &emmc_data[0] << '\n';
     // auto view_array = emmc_data_view();
+
+    {
+        uint8_t Test[] = { 'A','B','C','D','E','F','G','H' };
+        size_t off{7};
+        size_t wdt{5};
+        auto cmd = emmc::utils::cmd8_factory(&Test[0]) ;
+    }
     {
         emmc::utils::handle_fd mmcblk0("/tmp/some_file");
         std::cout << "It was successfully open: " << !mmcblk0 << '\n';
