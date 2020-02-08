@@ -6,6 +6,7 @@
 #include <array>
 #include <sstream>
 #include <bitset>
+#include <assert.h>
 
 // template<typename Array, typename RT>
 // RT extract_bits(Array& array, size_t offset, size_t width, RT& val){
@@ -89,26 +90,15 @@ RT extract_bits(Array& array, size_t offset, size_t width, RT& val){
     }
 
     for (size_t i = start_byte; i < end_byte; i++) {
-        // width -= 8;
-        // if(fb_msb == 0){
-        uint8_t shift = abs(((i-1)*8) - fb_msb);
+        uint8_t shift = ((i-1)*8) + fb_msb;
         uint8_t arrv = array[i];
-        val |= arrv << shift;  // -1 por que val es base 0
-        // } else {
-            // val |= array[i] << (width-1);
-        // }
-                // if(fb_msb != 0)
-        //     val >>= ( width );
-
+        val |= arrv << shift;
     }
 
     if(trailing_bit > 0){
         uint8_t trail_mask = ~(0xffu << trailing_bit);
         RT k = (array[end_byte] & trail_mask);
-        // if(fb_msb != 0)
-            // k <<= width-fb_msb - 1;//(fb_msb + (end_byte*8));
-        // if(start_byte != end_byte)
-            k <<= (width - trailing_bit);
+        k <<= (width - trailing_bit);
         val |= k;
     }
     return val;
@@ -120,18 +110,20 @@ int main(int argc, char const *argv[])
         0b1111'0111,
         0b0000'0111,
         0b0000'1111,
-        0b0001'1011,
+        0b1001'1011,
     };
     uint16_t ret16;
+    uint32_t ret32;
     uint8_t ret8;
 
     std::bitset<16> test;
 
     if( argc < 3) {
-        extract_bits(my_bytes, 2,15, ret16);
-        extract_bits(my_bytes, 8,12, ret16);
-        extract_bits(my_bytes, 6,5, ret8);
-        extract_bits(my_bytes, 8,5, ret8);
+        std::cout << std::boolalpha <<  (0x7df4 == extract_bits(my_bytes, 2,15, ret16)) << '\n';
+        std::cout << ( 0x7f7 == extract_bits(my_bytes, 8,12, ret16)) << '\n';
+        std::cout << ( 0x1f == extract_bits(my_bytes, 6,5, ret8)) << '\n';
+        std::cout << (23 == extract_bits(my_bytes, 8,5, ret8)) << '\n';
+        std::cout << (0x18783fbe == extract_bits(my_bytes, 5,29, ret32));
     } else {
         std::cout << "arg count " << argc << '\n';
         std::cout << "arg 1 " << argv[1] << '\n';
