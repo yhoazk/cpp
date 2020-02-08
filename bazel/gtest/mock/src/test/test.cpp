@@ -24,6 +24,7 @@ TEST_F(basic_math_test, testAddition){
     EXPECT_CALL(basictest, addition(2,3)).Times(1);
     EXPECT_EQ(5,basictest.addition(2,3));
 }
+
 // Here is a weird decision to take the protected and operate over it
 TEST_F(basic_math_test, testMultiplication){
     EXPECT_EQ(6, mTestObj->multiply(2,3));

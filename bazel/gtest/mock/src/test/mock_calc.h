@@ -1,9 +1,10 @@
 #include "gmock/gmock.h"
-#include "calc.cpp" // should the C file be added?
+#include "calc.h"
 
 using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::Invoke;
+
 
 class mock_basic_math : public basic_math {
     public:

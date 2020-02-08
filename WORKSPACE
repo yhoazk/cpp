@@ -6,7 +6,8 @@ git_repository(
     # build_file = "@//:gmock.BUILD",
     # build_file = "@google//BUILD.bazel",
     remote = "https://github.com/google/googletest",
-    tag = "release-1.8.1",
+    commit = "2fe3bd994b3189899d93f1d5a881e725e046fdc2",
+    shallow_since = "1535728917 -0400",
 )
 
 ## git_repository vs new_git_repository ?
