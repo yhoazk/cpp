@@ -1,4 +1,4 @@
-#include "src/lib/calc.h"
+#include "calc.h"
 
 
 int basic_math::addition(int x, int y){

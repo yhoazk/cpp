@@ -1,5 +1,5 @@
 #include "gmock/gmock.h"
-#include "src/lib/calc.cpp" // should the C file be added?
+#include "calc.cpp" // should the C file be added?
 
 using ::testing::_;
 using ::testing::AtLeast;
