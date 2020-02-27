@@ -1,28 +1,18 @@
 #include <iostream>
+#include <cstring>
 #include <map>
 #include <utility>
 
 using conf_name = const char*;
 using conf_element = std::pair<conf_name, int>;
 
-constexpr conf_name selection[] = {
+constexpr std::array<conf_name, 3> selection {{
     "PROP_XXYY",
     "PROP_EEEE",
     "PROP_ABCD"
-};
+}};
 
-
-template<int K>
-struct LUT {
-    constexpr explicit LUT() : emmc_conf(){
-        for(auto i =0; i< K; ++i){
-            emmc_conf[i].first = selection[i];
-        }
-    }
-    conf_element emmc_conf[K];
-};
-
-constexpr conf_element emmc_config[] = {
+constexpr std::array<conf_element, 16> emmc_config {{
         std::make_pair("PROP_AAAA", 0),
         std::make_pair("PROP_AABB", 1),
         std::make_pair("PROP_BBBB", 2),
@@ -39,18 +29,35 @@ constexpr conf_element emmc_config[] = {
         std::make_pair("PROP_XXY7", 19),
         std::make_pair("PROP_XXY8", 20),
         std::make_pair("PROP_XXYY", 21)
+}};
+
+template<int K>
+struct LUT {
+    constexpr explicit LUT() : emmc_conf(){
+        for(auto i =0; i< K; ++i){
+            for(size_t n = 0; n < emmc_config.size(); ++n){
+                if(std::strcmp(selection[i] , emmc_config[n].first)) {
+                    emmc_conf[i].first = emmc_config[n].first;
+                    emmc_conf[i].second = emmc_config[n].second;
+                }
+            }
+        }
+    }
+    conf_element emmc_conf[K];
 };
+
 
 
 // const int selected [10];
 
-
+//optional tuple_size 
 int main(int argc, char const *argv[])
 {
     std::cout << emmc_config[0].first << std::endl;
-    constexpr auto lut = LUT<sizeof(selection) / sizeof(selection[0])>();
+    //constexpr auto lut = LUT<std::tuple_size<selection>::value()>();
+    constexpr auto lut = LUT<selection.size()>();
     for(auto x : lut.emmc_conf){
-        std::cout << "x: " << x.first << '\n';
+        std::cout << "x: " << x.first << " val:" << x.second << '\n';
     }
     return 0;
 }
