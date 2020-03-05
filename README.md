@@ -177,3 +177,20 @@ The mutable and the volatile, both describe an object that can change out-of sco
 The `mutable` field can be changed even in an object accessed through a `const`
 pointer or reference; or in a `const` object, so the compiler knows not to stash
 it in registers or R/O memory. 
+
+## `sizeof` vs `tuple_size`
+
+```cpp
+[cling]$ using a8l5 = array<unsigned char, 5>;
+[cling]$ using a32l5 = array<int, 5>;
+[cling]$ sizeof(a8l5);
+[cling]$ sizeof(a8l5)
+(unsigned long) 5
+[cling]$ sizeof(a32l5)
+(unsigned long) 20
+[cling]$ tuple_size<a8l5>::value
+(const unsigned long) 5
+[cling]$ tuple_size<a32l5>::value
+(const unsigned long) 5
+
+```
