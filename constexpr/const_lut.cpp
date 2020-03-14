@@ -5,11 +5,11 @@
 
 using conf_name = const char*;
 using conf_element = std::pair<conf_name, int>;
-
+// what happens in the case when the string is not found at compile time?
 constexpr std::array<conf_name, 3> selection {{
     "PROP_XXYY",
-    "PROP_EEEE",
-    "PROP_ABCD"
+    "PROP_CCCC",
+    "PROP_AAAA"
 }};
 
 constexpr std::array<conf_element, 16> emmc_config {{
@@ -36,13 +36,15 @@ struct LUT {
     constexpr explicit LUT() : emmc_conf(){
         for(auto i =0; i< K; ++i){
             for(size_t n = 0; n < emmc_config.size(); ++n){
-                if(std::strcmp(selection[i] , emmc_config[n].first)) {
+                if(std::strcmp(selection[i] , emmc_config[n].first)==0) {
                     emmc_conf[i].first = emmc_config[n].first;
                     emmc_conf[i].second = emmc_config[n].second;
                 }
             }
         }
     }
+   // constexpr static  std::array<conf_element, K> emmc_conf;
+
     conf_element emmc_conf[K];
 };
 
@@ -53,9 +55,9 @@ struct LUT {
 //optional tuple_size 
 int main(int argc, char const *argv[])
 {
-    std::cout << emmc_config[0].first << std::endl;
     //constexpr auto lut = LUT<std::tuple_size<selection>::value()>();
     constexpr auto lut = LUT<selection.size()>();
+    //static_assert(lut.emmc_conf.size());
     for(auto x : lut.emmc_conf){
         std::cout << "x: " << x.first << " val:" << x.second << '\n';
     }
