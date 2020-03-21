@@ -10,6 +10,15 @@ git_repository(
     shallow_since = "1535728917 -0400",
 )
 
+
+### NNOTE: the build_files need to be located in the external dir
+new_git_repository(
+    name = "catch2",
+    remote = "https://github.com/catchorg/Catch2",
+    tag = "v2.11.3",
+    build_file = "catch2.bzl"
+)
+
 ## git_repository vs new_git_repository ?
 new_git_repository(
     name = "picojson",
