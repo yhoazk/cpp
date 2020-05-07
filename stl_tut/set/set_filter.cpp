@@ -14,6 +14,8 @@
 #include <linux/if_packet.h>
 #include <net/ethernet.h>
 
+//https://stackoverflow.com/questions/41959511/erase-set-iterator-value-and-increment-iterator
+
 namespace network
 {
     using mac_t = std::array<uint8_t, 6>;
@@ -81,19 +83,31 @@ namespace network
     }
 
     // why network settings cannot be a const reference?
-    bool filter_interfaces(network_settings& ns, std::set<std::string>& output, std::vector<std::function<bool(network_interface&)>> filters){
+    bool filter_interfaces(network_settings& ns, std::set<std::string>& output, const std::vector<std::function<bool(network_interface&)>> filters){
         for(const auto& interface : ns){
             std::cout << "Insert interface: " << interface.first << '\n';
             output.insert(interface.first);
         }
  
         for(auto& filter : filters) {
-            for(auto set_it = output.begin(); set_it!=output.end(); ++set_it){
-                if(filter(ns[*set_it])){
+            for(auto set_it = output.begin(); set_it!=output.end(); ){
+                auto ifc = ns.find(*set_it);
+                //if(ifc == output.end()) {continue;}
+                std::cout << "Check iface: " << ifc->first << '\n';
+                if(filter(ifc->second)){
                     std::cout << "Deleting: " << *set_it << '\n';
-                    output.erase(*set_it);
+                    // since c++11 erase returns the next element
+                    set_it = output.erase(set_it);
+                } else {
+                    ++set_it;
                 }
             }
+            /*
+            output.erase(
+                std::remove_if(output.begin(), output.end(), [&](std::string n) { return filter(ns[n]);}),
+                output.end()
+            );
+            */
         }
         return true;
     }
