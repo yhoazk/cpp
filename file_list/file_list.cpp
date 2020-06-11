@@ -24,8 +24,10 @@ int glob_test(const char *p) {
     // if(0 == glob(p, GLOB_ERR, nullptr, &gres)) {
     cout << "Number of files: " << to_string(gres.gl_pathc) << '\n';
     for (size_t fn = 0; fn < gres.gl_pathc; fn++) {
-      cout << "File name: " << *gres.gl_pathv << '\n';
-      gres.gl_pathv++;
+      cout << "File name: " << gres.gl_pathv[fn] << '\n';
+      // Do not advance the pointer as the function globfree fees it and we get
+      // SIGSEGV at that point
+      /* gres.gl_pathv++; */
     }
   } else {
     cerr << "Error reading: " << p << '\n';
