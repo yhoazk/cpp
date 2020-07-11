@@ -1,10 +1,8 @@
 #include <iostream>
 #include <fstream>
+#include <cassert>
 
-
-
-struct vertex
-{
+struct vertex {
     float x,y,z,w;
 };
 
@@ -12,18 +10,21 @@ struct vertex
  * Function to get the centroid of an array of vertex.
  * The formula to get the centroid is:
  *  C = (1/n) *( sum(vertex))
+ * Naive approach
  */
 
-vertex get_centroid(vertex* pVertex, size_t vertex_count )
-{
+vertex get_centroid(vertex* pVertex, size_t vertex_count ) {
+    assert(vertex_count != 0);
+
     vertex sum = {0,0,0,0};
-    for(unsigned int i = 0; i<vertex_count; i++)
-    {
+    for(unsigned int i = 0; i<vertex_count; i++) {
         sum.x += pVertex[i].x;
         sum.y += pVertex[i].y;
         sum.z += pVertex[i].z;
         sum.w += pVertex[i].w;
     }
+    // What about the numerical stability here and why apply the
+    // division here and not on every loop.
     sum.x /=(float) vertex_count;
     sum.y /=(float) vertex_count;
     sum.z /=(float) vertex_count;
@@ -33,8 +34,7 @@ vertex get_centroid(vertex* pVertex, size_t vertex_count )
 
 
 
-int main (void)
-{
+int main (void) {
     std::   ifstream monkey("Monkey.vertex", std::ios::binary | std::ios::in);
     if(!(monkey.is_open()))
     {
