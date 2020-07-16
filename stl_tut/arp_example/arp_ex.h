@@ -24,14 +24,15 @@ namespace net
         std::uniform_int_distribution<uint8_t> rnd_oct(1,255);
         auto oct_gen = std::bind(rnd_oct, gen);
 
-        arp_entry_t generate_arp_entry(ipv4_t ip, size_t mask, bool same_mac = false)
+        
+        arp_entry_t generate_arp_entry(ipv4_t& ip, size_t mask, bool same_mac = false)
         {
             arp_entry_t entry;
-            for (auto &oct : ip)
+            ipv4_t ipnew{ip};
+            for(size_t i = 0;i < std::tuple_size<ipv4_t>::value; ++i)
             {
-                if (0 == oct)
-                {
-                    oct = oct_gen();
+                if (0 == ip[i]) {
+                    ipnew[i] = oct_gen();
                 }
             }
             mac_t mac;
@@ -39,8 +40,19 @@ namespace net
             {
                 m = oct_gen();
             }
-            return std::make_pair(ip, mac);
+            return std::make_pair(ipnew, mac);
         }
+
+        arp_table_t generate_arp_table(const std::string& ifname, ipv4_t& base, size_t entries){
+            arp_table_t ret_val{};
+            std::vector<arp_entry_t> arp_entries{};
+            for (size_t i = 0; i < entries; i++) {
+                arp_entries.push_back(generate_arp_entry(base, 0));
+            }
+            ret_val[ifname] = arp_entries;
+            return ret_val;
+        }
+
         void print_entry(arp_entry_t entry){
             std::cout << "IP: ";
             for(const auto& ip : entry.first) {
@@ -55,7 +67,7 @@ namespace net
     } // namespace test_helper
 
 
-    arp_table_t symetric_diff(arp_table_t& table_a, arp_table_t& table_b) {
+    arp_table_t symetric_diff(arp_table_t& table_b, arp_table_t& table_a) {
         arp_table_t diff{};
         if(table_a != table_b) {
             // assume both have the same interfaces
@@ -77,8 +89,11 @@ namespace net
 
             for(const auto& name : ifaces_common) {
                 std::vector<arp_entry_t> diff_entries;
-                std::set_symmetric_difference(std::begin(table_a[name]), std::end(table_a[name]),
-                std::begin(table_b[name]), std::end(table_b[name]), std::back_inserter(diff_entries));
+                // std::set_symmetric_difference(std::begin(table_a[name]), std::end(table_a[name]),
+                // std::begin(table_b[name]), std::end(table_b[name]), std::back_inserter(diff_entries));
+
+                std::set_difference(std::begin(table_b[name]), std::end(table_b[name]),
+                std::begin(table_a[name]), std::end(table_a[name]), std::back_inserter(diff_entries));
 
                 std::cout << "Diff: " << std::to_string(diff_entries.size()) << '\n';
                 for(auto& k : diff_entries) {
@@ -89,5 +104,50 @@ namespace net
         return diff;
 
     }
+
+    bool double_move() {
+        ipv4_t b{192,168,2,0};
+        auto table = test_helper::generate_arp_table("ethi", b, 5);
+        static arp_table_t stat = std::move(table);
+        arp_table_t dyn = std::move(table);
+
+        std::cout << "stat\n";
+
+        for(auto& de : stat){
+            for(const auto& entry : de.second){
+                test_helper::print_entry(entry);
+            }
+        }
+        std::cout << "Dyn\n";
+        for(auto& de : dyn){
+            for(const auto& entry : de.second){
+                test_helper::print_entry(entry);
+            }
+        }
+
+
+
+    }
+    bool double_move_correct() {
+        ipv4_t b{192,168,2,0};
+        auto table = test_helper::generate_arp_table("ethi", b, 5);
+        static arp_table_t stat{table};
+
+        std::cout << "Corr Stat\n";
+
+        for(auto& de : table){
+            for(const auto& entry : de.second){
+                test_helper::print_entry(entry);
+            }
+        }
+        std::cout << "Corr Dyn\n";
+        for(auto& de : stat){
+            for(const auto& entry : de.second){
+                test_helper::print_entry(entry);
+            }
+        }
+
+    }
+
 
 } // namespace net

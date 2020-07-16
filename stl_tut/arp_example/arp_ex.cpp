@@ -29,12 +29,22 @@ int main() {
     net::symetric_diff(original,modified);
 
     std::cout << "\n====Modify the ARP table\n";
-
-    modified["eth0"][0].first[0] = 0; 
+    // modify the first octect of the ip address of the first entry of the
+    // arp table for eth0
+    // modified["eth0"][0].first[0] = 0; 
+    // Remove an entry
+    auto& arp_eth0 = modified["eth0"];
+    std::cout << "Size of arp_eth0: " << std::to_string(arp_eth0.size()) << '\n';
+    arp_eth0.pop_back();
+    modified["eth0"].pop_back();
+    std::cout << "Size of arp_eth0: " << std::to_string(arp_eth0.size()) << '\n';
     for(const auto& ent : modified["eth0"]) {
         net::test_helper::print_entry(ent);
     }
     net::symetric_diff(original,modified);
+
+    net::double_move();
+    net::double_move_correct();
 
     return 0;
 }
