@@ -194,3 +194,15 @@ it in registers or R/O memory.
 (const unsigned long) 5
 
 ```
+
+
+### Sample memcheck with valgrind
+
+```
+valgrind --leak-check=full \
+         --show-leak-kinds=all \
+         --track-origins=yes \
+         --verbose \
+         --log-file=valgrind-out.txt 
+         ./tested_binary arg1 arg2
+```
