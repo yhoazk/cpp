@@ -26,7 +26,9 @@ void memchecker::start_calc_crc64(const mem_reg& mr) {
     int count;
 
     lseek64(_mtdfd, mr.start, SEEK_SET); 
-    while ((count = read(_mtdfd, mem_buff.data(), read_size))){
+    std::cerr << "Len: " << len << " read_size: " << read_size <<'\n';
+
+    while ( (read_size <= len) and (count = read(_mtdfd, mem_buff.data(), read_size))){
         if(count > 0) {
             std::cout << "Read bytes: " << std::to_string(count) << " Planned: " << read_size << '\n';
             total += count;
@@ -39,13 +41,14 @@ void memchecker::start_calc_crc64(const mem_reg& mr) {
             break;
         }
         std::cerr << "LEN: " << std::to_string(len) << "  count: " << count << '\n';
-        if(count > len){
-            read_size = len;
-            len = 0;
-        } else {
-            len -= count;
-        } 
+        len -= count;
+        std::cerr << "REM LEN: " << std::to_string(len) << "  count: " << count << '\n';
     }
+
+    count = read(_mtdfd, mem_buff.data(), len);
+    std::cerr << "LEN: " << std::to_string(len) << "  count: " << count << '\n';
+    total +=count;
+
     std::cout << "Total bytes read: " << std::to_string(total) << '\n';
 }
 
