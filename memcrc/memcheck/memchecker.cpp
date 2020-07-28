@@ -20,13 +20,33 @@ memchecker* memchecker::getInsance(const std::string& dev_path){
 
 void memchecker::start_calc_crc64(const mem_reg& mr) {
     std::array<uint8_t,mem::buff_size> mem_buff;
-    
-    auto count = read(_mtdfd, mem_buff.data(), mem_buff.size());
-    if(-1 != count) {
-        std::cout << "Read bytes: " << std::to_string(count) << '\n';
-    } else {
-        std::cerr << "Error reading\n";
+    size_t read_size{std::min(mr.len, mem::buff_size)};
+    size_t len{mr.len};
+    size_t total{0};
+    int count;
+
+    lseek64(_mtdfd, mr.start, SEEK_SET); 
+    while ((count = read(_mtdfd, mem_buff.data(), read_size))){
+        if(count > 0) {
+            std::cout << "Read bytes: " << std::to_string(count) << " Planned: " << read_size << '\n';
+            total += count;
+        } else {
+            if(count == 0) {
+                std::cerr << "DONE\n";
+                break;
+            }
+            std::cerr << "Error reading\n";
+            break;
+        }
+        std::cerr << "LEN: " << std::to_string(len) << "  count: " << count << '\n';
+        if(count > len){
+            read_size = len;
+            len = 0;
+        } else {
+            len -= count;
+        } 
     }
+    std::cout << "Total bytes read: " << std::to_string(total) << '\n';
 }
 
 

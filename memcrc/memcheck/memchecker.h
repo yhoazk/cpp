@@ -16,7 +16,7 @@
 namespace mem {
 
 using reg_pair = std::pair<size_t, size_t>;
-const size_t buff_size{128*1024};
+const size_t buff_size{4*1024};
 
 struct mem_reg {
     const std::string name;
@@ -37,11 +37,18 @@ public:
 private:
     explicit memchecker(const std::string& path){
         _mtdfd = open(path.c_str(), O_RDONLY);
-        if(!_mtdfd) {
+        std::cerr << "fn:" << std::to_string(_mtdfd) << '\n';
+        // if(_mtdfd > 0UL) { Example of the importance of UL ending, if this gets removed the exception
+        // is not thrown ecause 0 by default is s
+        if(_mtdfd == -1) {
             throw;
         }
     }
-    ~memchecker(){}
+    ~memchecker(){  
+        if(_mtdfd != -1) {
+            close(_mtdfd);
+        }
+    }
     static memchecker* pinst;
     static std::mutex mtx;
     static int _mtdfd;
