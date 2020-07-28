@@ -5,6 +5,7 @@ cc_library(
     srcs = ["memcheck/memchecker.cpp"],
     hdrs = ["memcheck/memchecker.h"],
     strip_include_prefix = "memcheck",
+    alwayslink = True
 )
 
 cc_binary(

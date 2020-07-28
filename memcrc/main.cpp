@@ -8,8 +8,10 @@ std::array<mem::mem_reg, 3> regions{{
 }};
 
 int main(){
+    auto memcheck = mem::memchecker::getInsance("/tmp/zero_block");
     for(const auto& reg : regions){
         std::cout << reg.name <<'\n';
+        memcheck->start_calc_crc64(reg);
     }
     return 0;
 }
