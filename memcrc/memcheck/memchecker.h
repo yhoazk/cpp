@@ -7,6 +7,8 @@
 #include <string>
 #include <map>
 #include <iostream>
+#include <future>
+#include <thread>
 
 #include <fcntl.h>
 #include <stdlib.h>
@@ -33,6 +35,16 @@ public:
     void start_calc_crc64(const mem_reg&);
     bool query_calc_crc64(mem_reg& );
     static memchecker* getInsance(const std::string& dev_path);
+
+    template<std::size_t ELEMENTS>
+    std::future<bool> async_crc64(const std::array<mem_reg, ELEMENTS>& regions){
+        return std::async( [&](){ 
+            for(const auto& reg : regions){
+                start_calc_crc64(reg);;
+            }
+            return true;
+        });
+    }
 
 private:
     explicit memchecker(const std::string& path){

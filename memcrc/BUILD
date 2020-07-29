@@ -1,5 +1,4 @@
 
-
 cc_library(
     name = "memchecker",
     srcs = ["memcheck/memchecker.cpp"],
@@ -11,5 +10,6 @@ cc_library(
 cc_binary(
     name = "memcheck",
     srcs = ["main.cpp"],
+    linkopts = ["-lpthread"],
     deps = [":memchecker"]
 )

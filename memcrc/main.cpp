@@ -1,17 +1,31 @@
 #include <iostream>
 #include <memchecker.h>
+#include <cstdio>
+#include <chrono>
 
 std::array<mem::mem_reg, 3> regions{{
-    {.name = "First", .start = 0x0,     .len = 0x400*5, .crc64=0},
-    {.name = "Sec",   .start = 0x400*5, .len = 0x400*7, .crc64=0},
-    {.name = "Thrd",  .start = 0x400*7, .len = 0x400*3, .crc64=0},
+    {.name = "First", .start = 0x0,     .len = 0x400*1500, .crc64=0},
+    {.name = "Sec",   .start = 0x400*1500, .len = 0x400*1700, .crc64=0},
+    {.name = "Thrd",  .start = 0x400*1700, .len = 0x400*1900, .crc64=0},
 }};
 
+
 int main(){
+    using namespace std;
+    using namespace chrono_literals;
     auto memcheck = mem::memchecker::getInsance("/tmp/zero_block");
-    for(const auto& reg : regions){
-        std::cout << reg.name <<'\n';
-        memcheck->start_calc_crc64(reg);
+    auto prom = memcheck->async_crc64(regions);
+
+    // memcheck->start_calc_crc64(regions[1]);
+    std::cerr << "OKOKOK\n";
+
+
+    while('X' != std::getchar()) {
+        if(prom.wait_for(0ms) == std::future_status::ready){
+            std::cout << "REadyyy\n";
+        } else {
+            std::cout << "Busy\n";
+        }
     }
     return 0;
 }
