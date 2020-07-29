@@ -4,7 +4,7 @@
 #include <chrono>
 
 std::array<mem::mem_reg, 3> regions{{
-    {.name = "First", .start = 0x0,     .len = 0x400*1500, .crc64=0},
+    {.name = "First", .start = 0x0,        .len = 0x400*1500, .crc64=0},
     {.name = "Sec",   .start = 0x400*1500, .len = 0x400*1700, .crc64=0},
     {.name = "Thrd",  .start = 0x400*1700, .len = 0x400*1900, .crc64=0},
 }};
