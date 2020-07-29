@@ -1695,7 +1695,8 @@ inline const CRC::Parameters<crcpp_uint64, 40> & CRC::CRC_40_GSM()
 */
 inline const CRC::Parameters<crcpp_uint64, 64> & CRC::CRC_64()
 {
-    static const Parameters<crcpp_uint64, 64> parameters = { 0x42F0E1EBA9EA3693, 0x0000000000000000, 0x0000000000000000, false, false };
+    // static const Parameters<crcpp_uint64, 64> parameters = { 0x42F0E1EBA9EA3693, 0x0000000000000000, 0x0000000000000000, false, false };
+    static const Parameters<crcpp_uint64, 64> parameters = { 0x42F0E1EBA9EA3693, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, false, false };
     return parameters;
 }
 #endif // CRCPP_INCLUDE_ESOTERIC_CRC_DEFINITIONS

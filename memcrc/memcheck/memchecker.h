@@ -18,7 +18,7 @@
 namespace mem {
 
 using reg_pair = std::pair<size_t, size_t>;
-const size_t buff_size{4*1024};
+const size_t buff_size{128*1024};
 
 struct mem_reg {
     const std::string name;

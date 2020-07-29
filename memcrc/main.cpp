@@ -4,16 +4,16 @@
 #include <chrono>
 
 std::array<mem::mem_reg, 3> regions{{
-    {.name = "First", .start = 0x0,        .len = 0x400*1500, .crc64=0},
-    {.name = "Sec",   .start = 0x400*1500, .len = 0x400*1700, .crc64=0},
-    {.name = "Thrd",  .start = 0x400*1700, .len = 0x400*1900, .crc64=0},
+    {.name = "First", .start = 0x0,        .len = 9, .crc64=0},
+    // {.name = "Sec",   .start = 0x400*1500, .len = 0x400*1700, .crc64=0},
+    // {.name = "Thrd",  .start = 0x400*1700, .len = 0x400*1900, .crc64=0},
 }};
 
 
 int main(){
     using namespace std;
     using namespace chrono_literals;
-    auto memcheck = mem::memchecker::getInsance("/tmp/zero_block");
+    auto memcheck = mem::memchecker::getInsance("/tmp/test_block");
     auto prom = memcheck->async_crc64(regions);
 
     // memcheck->start_calc_crc64(regions[1]);
