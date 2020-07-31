@@ -19,12 +19,14 @@ def create_block(path, data_pattern, size_mb=1):
             count -=1
 
 def crc_test(pth):
+    #OK with 10'000
     with open("/tmp/test_block", "wb") as blk:
-        blk.write(bytearray(b"123456789"))
+        for _ in range(34300):
+            blk.write(bytearray(b"1234567890"))
 
     with open("/tmp/test_block", 'rb') as fh, mmap(fh.fileno(), 0, access=ACCESS_READ) as mm: 
         crc = Crc64We.calc((b[0] for b in mm))
-        print(f"TEST /tmp/test_block crc: {hex(crc)}")
+        print(f"GOLD: TEST /tmp/test_block crc: {hex(crc)}")
 
 
 def print_crc64(path):
@@ -33,6 +35,7 @@ def print_crc64(path):
         data = blk.read(128*1024)
         if data:
             cr64.process(data)
+    print("___")
     print(cr64.finalhex())
 
 if __name__ == "__main__":
@@ -44,7 +47,7 @@ if __name__ == "__main__":
     print(f"Test value {hex(cr64._check_result)} Calculated {cr64.finalhex()}")
 
     # create_block(block_path, "BADC00FEBADC00FE")
-    print_crc64(block_path) 
+    print_crc64("/tmp/test_block") 
     crc_test(block_path)
     # DEADBEEFDEADBEEF => 0x29d8e96fd64c2e72
     # BADC00FEBADC00FE => 0x1d8cae34ea398460
