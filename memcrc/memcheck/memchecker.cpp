@@ -40,7 +40,7 @@ void memchecker::start_calc_crc64(const mem_reg& mr) {
     if(crc_it == std::cend(crc_reg)) {
         std::lock_guard<std::mutex> lock(mtx);
         lseek64(_mtdfd, mr.start, SEEK_SET); 
-        while (  (count = read(_mtdfd, mem_buff.data(), read_size) )) {
+        while (count = read(_mtdfd, mem_buff.data(), read_size) ) {
             std::this_thread::sleep_for(10ms);
             if(count > 0) {
                 std::cout << "Read bytes: " << std::to_string(count) << " Planned: " << std::to_string(read_size) << '\n';
@@ -67,6 +67,7 @@ void memchecker::start_calc_crc64(const mem_reg& mr) {
         }
 
         count = read(_mtdfd, mem_buff.data(), len);
+        crc = CRC::Calculate(mem_buff.data(), count, CRC::CRC_64(), crc);
         //calc and update chesum
         crc_reg.emplace(std::make_pair(mr.start, mr.len), count);
     } else {
