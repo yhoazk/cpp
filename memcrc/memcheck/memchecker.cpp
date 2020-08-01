@@ -39,43 +39,44 @@ void memchecker::start_calc_crc64(const mem_reg& mr) {
 
     if(crc_it == std::cend(crc_reg)) {
         std::lock_guard<std::mutex> lock(mtx);
-        lseek64(_mtdfd, mr.start, SEEK_SET); 
-        while (count = read(_mtdfd, mem_buff.data(), read_size) ) {
-            std::this_thread::sleep_for(10ms);
-            if(count > 0) {
-                std::cout << "Read bytes: " << std::to_string(count) << " Planned: " << std::to_string(read_size) << '\n';
-                if(first){
-                    crc = CRC::Calculate(mem_buff.data(), count, CRC::CRC_64());
-                    first = false;
-                } else {
+        crc_it = crc_reg.find(reg_id);
+        if(crc_it == std::cend(crc_reg)) {
+            lseek64(_mtdfd, mr.start, SEEK_SET); 
+            while (count = read(_mtdfd, mem_buff.data(), read_size) ) {
+                // std::this_thread::sleep_for(10ms);
+                if(count > 0) {
+                    std::cout << "Read bytes: " << std::to_string(count) << " Planned: " << std::to_string(read_size) << '\n';
+                    if(first){
+                        crc = CRC::Calculate(mem_buff.data(), count, CRC::CRC_64());
+                        first = false;
+                    } else {
                     crc = CRC::Calculate(mem_buff.data(), count, CRC::CRC_64(), crc);
-                }
-                // std::cout << "xx crc: " << std::hex << crc << '\n';
+                    }
+                    // std::cout << "xx crc: " << std::hex << crc << '\n';
                 total += count;
-            } else {
-                if(count == 0) {
-                    std::cerr << "DONE\n";
+                } else {
+                    if(count == 0) {
+                        std::cerr << "DONE\n";
+                        break;
+                    }
+                    std::cerr << "Error reading\n";
                     break;
                 }
-                std::cerr << "Error reading\n";
-                break;
+                // std::cerr << "LEN: " << std::to_string(len) << "  count: " << count << '\n';
+                // std::cout << ".\n";
+                len -= count;
+                // std::cerr << "REM LEN: " << std::to_string(len) << "  count: " << count << '\n';
             }
-            // std::cerr << "LEN: " << std::to_string(len) << "  count: " << count << '\n';
-            // std::cout << ".\n";
-            len -= count;
-            // std::cerr << "REM LEN: " << std::to_string(len) << "  count: " << count << '\n';
-        }
 
-        count = read(_mtdfd, mem_buff.data(), len);
-        crc = CRC::Calculate(mem_buff.data(), count, CRC::CRC_64(), crc);
-        //calc and update chesum
-        crc_reg.emplace(std::make_pair(mr.start, mr.len), count);
+            count = read(_mtdfd, mem_buff.data(), len);
+            crc = CRC::Calculate(mem_buff.data(), count, CRC::CRC_64(), crc);
+            //calc and update chesum
+            crc_reg.emplace(std::make_pair(mr.start, mr.len), count);
+        } else {std::cout << "BLCOK\n";}
     } else {
-        // std::cerr << "CRC ALREADY CALC\n";
+        std::cerr << "CRC ALREADY CALC\n";
     }
     // std::cerr << "LEN: " << std::to_string(len) << "  count: " << count << '\n';
-    total +=count;
-
     std::cout << "Total bytes read: " << std::to_string(total) << " CRC: " << std::hex << crc  << '\n';
 }
 

@@ -15,6 +15,11 @@ int main(){
     using namespace chrono_literals;
     auto memcheck = mem::memchecker::getInsance("/tmp/test_block");
     auto prom = memcheck->async_crc64(regions);
+    auto prom1 = memcheck->async_crc64(regions);
+    auto prom2 = memcheck->async_crc64(regions);
+    auto prom3 = memcheck->async_crc64(regions);
+    auto prom4 = memcheck->async_crc64(regions);
+    auto prom5 = memcheck->async_crc64(regions);
 
     // memcheck->start_calc_crc64(regions[1]);
 
