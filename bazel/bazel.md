@@ -97,3 +97,18 @@ bazel build ... --compilation_mode=dbg -s
 
 ( the mode is `dbg` not `gdb`)
 2. Run `gdbtui` calling the binary in `bazl-bin/bin/main`
+
+#### Profile
+
+[src](https://docs.bazel.build/versions/master/skylark/performance.html#performance-profiling)
+
+To profile the compilation time use the flag `--profile=<path>.gz` this will
+create a file which can be viewed with chrome by droping it under a tab in:
+`chrome://tracing`
+
+#### Autocomplete
+
+this gets installed with the package manager for fedora `sudo dnf install bazel3`
+But first the COPR repo needs to be enabled: `sudo dnf install dnf-plugins-core`
+
+`bazel help completion` sh
