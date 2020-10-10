@@ -7,7 +7,7 @@
 
 class logger {
 public:
-logger(std::string name):name(name){};
+explicit logger(std::string name):name(name){};
 
 void info(std::string log) noexcept;
 void warn(std::string log) noexcept;
