@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #include <syslog.h>
-
+// what happens when the date is changed during the wait?
+// https://stackoverflow.com/q/51483659
 void for_5s(void){
     syslog(LOG_ERR, "Starting help thead");
     std::this_thread::sleep_for(std::chrono::seconds(5));
