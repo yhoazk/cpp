@@ -23,7 +23,7 @@ uint64_t mactoeui64(uint64_t mac) {
  * Algorithmo to convert MAC to EUI-64
  * 1. Split the mac in 2, 3 upper bytes and 3 lower bytes
  * 2. Insert 0xfffe in the middle
- * 3. Set the bit 7th bit of the MSB from upper ie | 0x020000
+ * 3. flip the bit 7th bit of the MSB from upper ie | 0x020000
  * 4. Merge upper shifted << 16 and 0xfffe and lower part
  * eg:
  * 00:15:2B:E4:9B:60 -> 02:15:2B:FF:FE:E4:9B:60
