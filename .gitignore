@@ -11,3 +11,6 @@ pts.csv
 bazel-*
 obj_pose*.txt
 .cache
+
+# for opencv
+*.avi
