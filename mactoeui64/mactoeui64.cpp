@@ -15,7 +15,8 @@ uint64_t mactoeui64(uint64_t mac) {
     uint64_t eui64{0x00'00'00'ff'fe'00'00'00};
 
     upper <<= 16;
-    upper ^= 1UL << ((7*8)+1) ;
+    upper ^= 1UL << ((7*8)+1); // Setting this one has a special meaning.
+    // if set it means that the MAC was assigned and not native
     eui64 |= upper | lower;
     return eui64;
 }
