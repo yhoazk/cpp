@@ -4,7 +4,7 @@
 int main() {
     func::module mod;
     for(const auto _ : {0,0}) {
-        if (mod.is_ok()) {
+        if (mod.is_ok(5)) {
             std::cout << "Module is ok" << std::endl;
         } else {
             std::cout << "module is not ok" << std::endl;

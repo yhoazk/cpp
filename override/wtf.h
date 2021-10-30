@@ -1,6 +1,8 @@
 /* Code about a PR where this was found 
 The override in the definition of concrete methods of an abstract class make sense
 to be sure that they are actually overriding and not implementing a new overload
+
+what if the final modifier is added?
 */
 
 #include <cstdint>
@@ -13,12 +15,13 @@ class module_interface {
 };
 
 // https://stackoverflow.com/questions/46446652/is-there-any-point-in-using-override-when-overriding-a-pure-virtual-function
-class module : public module_interface {
+class module  : public module_interface {
+// class module final : public module_interface {
     private:
     std::uint8_t value{};
     public:
-    bool is_ok() override;
-    // bool is_ok();
+    // bool is_ok() override;
+    bool is_ok(int);
     void apply_change(std::uint8_t) override;
     // void apply_change(std::uint8_t);
 };
