@@ -4,6 +4,9 @@
 *.out
 *.log
 *.swp
+*.gch
+*.o
+*.so
 
 pts.csv
 .vscode/
