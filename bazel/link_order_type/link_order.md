@@ -25,3 +25,11 @@ Now generate the binary:
 g++ link_order.cpp -o link_order_1_2.exe -lFoo1 -lFoo2 -L.
 g++ link_order.cpp -o link_order_2_1.exe -lFoo2 -lFoo1 -L.
 ```
+
+The point of this is to show how the result of the operation depends on the order in which the
+type is find at link/load time and not of the content of the sources.
+This comes from a bug found in test code from production.
+The test code uses a type which implements similar functionality, but reduced to the production one.
+The production code got leaked in the test, where apparenly the compiler uses a method from a
+different type, but same namespace and typename. The solution would be to cleanly separate test and
+production code, this is not always easy due to strage dependencies.
