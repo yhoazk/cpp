@@ -22,6 +22,6 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PWD
 Now generate the binary:
 
 ```
-g++ link_order.cpp -o link_order_1_2 -lFoo1 -lFoo2 -L.
-g++ link_order.cpp -o link_order_2_1 -lFoo2 -lFoo1 -L.
+g++ link_order.cpp -o link_order_1_2.exe -lFoo1 -lFoo2 -L.
+g++ link_order.cpp -o link_order_2_1.exe -lFoo2 -lFoo1 -L.
 ```
