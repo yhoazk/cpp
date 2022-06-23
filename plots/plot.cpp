@@ -1,8 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <array>
-
 #include "fir.h"
+
 /*
 get data from the mic
 arecord -d 5 -f FLOAT_LE  -t raw test.raw
@@ -38,9 +38,9 @@ int main(int argc, char const *argv[])
             std::cout << sample->rigth << '\n';
             /* code */
         }
-        
+
     }
         //std::cout << "Read:: " << file.gcount() << '\n';
 
-    return 10;
+    return 0;
 }

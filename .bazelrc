@@ -1,2 +1,2 @@
 test --test_output=streamed
-build --cxxopt='-std=c++14'
+build --cxxopt='-std=c++17' --sandbox_writable_path=/run/user/1000
