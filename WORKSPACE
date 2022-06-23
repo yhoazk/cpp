@@ -10,8 +10,7 @@ git_repository(
     shallow_since = "1535728917 -0400",
 )
 
-
-### NNOTE: the build_files need to be located in the external dir
+### NOTE: the build_files need to be located in the external dir
 new_git_repository(
     name = "catch2",
     remote = "https://github.com/catchorg/Catch2",

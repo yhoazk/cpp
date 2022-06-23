@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
-valgrind --leak-check=summary  $1 
+valgrind --leak-check=summary  $1
+:w

@@ -23,14 +23,14 @@ class multi {
     {
       _byte_array.push_back(data_as_char[i]);
     }
-    
+
   }
 
   size_t get_size(){
     return _byte_array.size();
   }
 
-  
+
   #ifdef LEAK
   ~multi(){}
   #else
