@@ -2,6 +2,4 @@
 cc_binary(
     name = "daemon",
     srcs = ["daemon.cpp"],
-    copts = [],
-    deps = [""],
 )

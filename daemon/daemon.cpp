@@ -72,7 +72,7 @@ int main(void){
 
         exit(EXIT_FAILURE);
     }
-    
+
     /* catch, ingore and handle signals */
     signal(SIGCHLD, SIG_IGN);
     signal(SIGHUP, SIG_IGN);

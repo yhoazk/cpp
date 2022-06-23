@@ -1,6 +1,5 @@
 # Dämon
 
-
 ## Process Groups
 
 ### `setsid()`
@@ -19,4 +18,7 @@ A session is a group of one or more process groups. Process groups are not
 allowed to change sessions nor a process grp is allowed to create a process grp
 which is part of another session. 
 
-## 
+## Double fork
+
+
+## Handling signals

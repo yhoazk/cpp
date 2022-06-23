@@ -1,9 +1,9 @@
 APP=daemon
 
-all: clean comp
+all: clean
 
 clean:
 	rm -rf ./${APP}.exe
 
-comp:
+${APP}:
 	g++ -g -o ${APP}.exe ${APP}.cpp
